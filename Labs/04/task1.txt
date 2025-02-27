@@ -1,0 +1,7 @@
+1. MOV AX 3d → Missing comma AFTER AX
+2. MOV 23, AX → Value of source is written at destination
+3. MOV CX, CH → Size of both register is not equal
+4. MOVE AX, 1h → MOVE instead of MOV is used
+5. ADD 2, CX →  Value of source is written at destination
+6. ADD 3, 6 → Both source and destination are values
+7. INC AX, 2 → INC instruction only increments by 1, and it accepts only a single operand.
