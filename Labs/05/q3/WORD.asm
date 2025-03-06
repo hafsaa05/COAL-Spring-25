@@ -1,8 +1,8 @@
 INCLUDE Irvine32.inc
 
 .data
-    arr dw 61, 43, 11, 52, 25   
-    sorted dw 5 DUP(?)          
+    arr WORD 61, 43, 11, 52, 25   
+    sorted WORD 5 DUP(?)          
 
 .code
 main PROC
