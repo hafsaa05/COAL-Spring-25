@@ -1,8 +1,8 @@
 INCLUDE Irvine32.inc
 
 .data
-    arr db 61, 43, 11, 52, 25   
-    sorted db 5 DUP(?)          
+    arr BYTE 61, 43, 11, 52, 25   
+    sorted BYTE 5 DUP(?)          
 
 .code
 main PROC
