@@ -16,7 +16,7 @@ INCLUDE Irvine32.inc
 .code
 main PROC
     mov ecx, 5
-    xor esi, esi
+    mov esi, 0  
 
 inputLoop:
     mov edx, OFFSET msgID
@@ -26,7 +26,9 @@ inputLoop:
 
     mov edx, OFFSET msgName
     call WriteString
-    lea edx, empName[esi * 30]
+    mov eax, esi
+    imul eax, 30
+    lea edx, empName[eax]
     call ReadString
 
     mov edx, OFFSET msgDOB
