@@ -14,3 +14,4 @@
 <img width="286" alt="image" src="https://github.com/user-attachments/assets/9ace26ca-eafe-43b8-87f3-593a4b6a534c" />
 
 ## Q6
+<img width="235" alt="image" src="https://github.com/user-attachments/assets/6160ab26-ca7b-4ebd-83f4-54e3d9dbf363" />
