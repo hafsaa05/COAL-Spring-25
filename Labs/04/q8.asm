@@ -9,7 +9,7 @@ val4 WORD 7FFFh
 .code
 main:
     ;i. Write an instruction that increments val2.
-    MOV EAX, val1
+    MOV EAX, val2
     INC EAX
 
     ;ii. Write an instruction that subtracts val3 from EAX.
