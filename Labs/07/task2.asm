@@ -1,6 +1,6 @@
 INCLUDE Irvine32.inc
 .data
-num DWORD 2  
+num DWORD 1 
 sum DWORD 0  
 
 .code
