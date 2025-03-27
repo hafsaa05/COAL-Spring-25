@@ -1,24 +1,29 @@
 INCLUDE Irvine32.inc
 .data
-num DWORD 2    
+num DWORD 2  
+sum DWORD 0  
+
 .code
 main PROC
-    mov eax, 1       
-    mov ecx, 3       
+    mov ecx, 3        
 
 L1:
-    push num         
+    push num        
     add num, 2       
-    loop L1          
+    loop L1           
 
-    mov ecx, 3       
+    mov eax, 0         
+    mov ecx, 3         
 
 L2:
-    pop ebx          
-    mul ebx           
+    pop ebx           
+    add eax, ebx      
     loop L2           
 
-    call WriteDec    
+    mov sum, eax      
+    mov eax, sum       
+
+    call WriteInt      
     call Crlf        
 
     exit
