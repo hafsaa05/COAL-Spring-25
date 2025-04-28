@@ -1,58 +1,74 @@
 INCLUDE Irvine32.inc
 
 .data
-arr WORD 10, 4, 7, 14, 299, 156, 3, 19, 29, 300, 20
-arrSize = 11
-prompt1 BYTE "Array after sorting:", 0
+    arr         WORD 10, 4, 7, 14, 299, 156, 3, 19, 29, 300, 20
+    arrSize     DWORD 11
+    original_msg BYTE "Original array: ", 0
+    sorted_msg   BYTE "Sorted array:   ", 0
+    space        BYTE " ", 0
+    swapped      DWORD 0                  
 
 .code
 main PROC
-    mov esi, OFFSET arr
-    mov ecx, arrSize
-
-outer_loop:
-    mov ecx, arrSize
-    dec ecx
-
-    mov esi, OFFSET arr
-
-inner_loop:
-    cmp ecx, 0
-    je outer_continue
-
-    mov ax, [esi]
-    mov bx, [esi+2]
-    cmp ax, bx
-    jbe no_swap
-
-    ; swap [esi] and [esi+2]
-    mov [esi], bx
-    mov [esi+2], ax
-
-no_swap:
-    add esi, TYPE arr
-    loop inner_loop
-
-outer_continue:
-    dec arrSize
-    cmp arrSize, 1
-    jg outer_loop
-
-    ; Print sorted array
-    mov edx, OFFSET prompt1
+    
+    mov edx, OFFSET original_msg
     call WriteString
-    call Crlf
+    call DisplayArray
 
-    mov ecx, 11
-    mov esi, OFFSET arr
+    mov esi, OFFSET arr       
+    mov ecx, arrSize
+    dec ecx                    
+    jz Done                   
 
-print_loop:
-    mov ax, [esi]
-    call WriteDec
-    call Crlf
-    add esi, TYPE arr
-    loop print_loop
+OuterLoop:
+    mov swapped, 0             
+    mov ebx, 0                 
 
-    exit
+InnerLoop:
+    mov ax, [esi + ebx*2]           
+    mov dx, [esi + ebx*2 + 2]       
+
+    cmp ax, dx
+    jle NoSwap                    
+
+    mov [esi + ebx*2], dx
+    mov [esi + ebx*2 + 2], ax
+    mov swapped, 1
+
+NoSwap:
+    inc ebx
+    cmp ebx, ecx
+    jl InnerLoop                  
+
+    cmp swapped, 0
+    je Done                       
+
+    dec ecx
+    jnz OuterLoop                 
+
+Done:
+    mov edx, OFFSET sorted_msg
+    call WriteString
+    call DisplayArray
+
+    INVOKE ExitProcess, 0
 main ENDP
+
+DisplayArray PROC
+    mov esi, OFFSET arr
+    mov ecx, arrSize
+    mov ebx, 0
+
+PrintLoop:
+    movzx eax, WORD PTR [esi + ebx*2]  
+    call WriteInt                       
+    mov edx, OFFSET space
+    call WriteString                    
+    inc ebx
+    loop PrintLoop
+
+    call Crlf
+    ret
+DisplayArray ENDP
+
 END main
