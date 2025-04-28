@@ -17,7 +17,7 @@ main PROC
     mov esi, OFFSET arr
     mov ecx, arrSize
 
-search_loop:
+L1:
     cmp ecx, 0
     je not_found
 
@@ -26,7 +26,7 @@ search_loop:
     je found
 
     add esi, TYPE arr
-    loop search_loop
+    loop L1
 
 not_found:
     mov edx, OFFSET prompt3
