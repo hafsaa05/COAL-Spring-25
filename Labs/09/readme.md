@@ -13,9 +13,7 @@
 ![image](https://github.com/user-attachments/assets/61574863-5111-4107-84f9-35db129f40e4)
 
 ## Q5
-![Uploading image.png…]()
-
-
+![Screenshot 2025-05-08 021046](https://github.com/user-attachments/assets/ee8a2f5b-d928-4c9b-8f7a-cfad27977e6b)
 
 
 
