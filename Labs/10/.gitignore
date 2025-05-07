@@ -8,13 +8,12 @@ INCLUDE Irvine32.inc
 .code
 main PROC
     cld                         ; Clear direction flag (scan forward)
-    mov edi, OFFSET Str1        ; EDI points to string
-    mov al, '#'                 ; Character to find
-    mov ecx, LENGTHOF Str1      ; Search length
+    mov edi, OFFSET Str1        
+    mov al, '#'                 
+    mov ecx, LENGTHOF Str1      
 
-    repne scasb                 ; Repeat while not equal
-    jnz NotFound                ; Jump if not found
-
+    repne scasb                
+    jnz NotFound               
     ; Character was found
     mov eax, edi
     sub eax, OFFSET Str1        ; EDI - base = position (1-based)
@@ -22,7 +21,7 @@ main PROC
 
     mov edx, OFFSET foundMsg
     call WriteString
-    call WriteDec               ; Show index
+    call WriteDec               
     call Crlf
     jmp Done
 
