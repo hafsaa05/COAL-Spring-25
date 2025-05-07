@@ -12,6 +12,8 @@
 ## Q4
 ![image](https://github.com/user-attachments/assets/61574863-5111-4107-84f9-35db129f40e4)
 
+## Q5
+![Uploading image.png…]()
 
 
 
