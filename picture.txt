@@ -1,1 +1,2732 @@
-1
+# #EDA
+# # ============================================================
+# #               EDA + DATA PREPROCESSING (EXAM NOTES)
+# # Easy, Clean, Well-Commented Code for Revision
+# # ============================================================
+
+# import pandas as pd
+# import numpy as np
+# import seaborn as sns
+# import matplotlib.pyplot as plt
+# from sklearn.preprocessing import LabelEncoder, StandardScaler, MinMaxScaler
+# from imblearn.over_sampling import RandomOverSampler
+# from imblearn.under_sampling import RandomUnderSampler
+
+
+# # ============================================================
+# # 1. READ DATA
+# # ============================================================
+# df = pd.read_csv("data.csv")        # load CSV file
+
+
+# # ============================================================
+# # 2. BASIC DATA CHECKS
+# # ============================================================
+# df.head()                            # first 5 rows
+# df.tail()                            # last 5 rows
+# df.columns                           # list of column names
+# df.shape                             # (rows, columns)
+# df.dtypes                            # data types of each column
+# df.info()                            # columns + null + dtypes
+# df.describe()                        # numerical statistics
+
+
+# # ============================================================
+# # 3. NULL VALUE CHECKS
+# # ============================================================
+# df.isnull().sum()                    # total missing values per column
+
+# # Drop missing values (rows)
+# df_dropna = df.dropna()
+
+# # Fill missing values
+# df['num_col'] = df['num_col'].fillna(df['num_col'].mean())     # numeric → mean
+# df['num_col'] = df['num_col'].fillna(df['num_col'].median())   # numeric → median
+# df['cat_col'] = df['cat_col'].fillna(df['cat_col'].mode()[0])  # categorical → mode
+
+
+# # ============================================================
+# # 4. DROP COLUMNS & ROWS
+# # ============================================================
+# df_col_drop = df.drop(['col_to_drop'], axis=1)        # drop column
+# df_row_drop = df.drop([2, 5], axis=0)                 # drop rows using index
+
+
+# # ============================================================
+# # 5. INSERT & APPEND
+# # ============================================================
+# df.insert(1, 'new_col', df['col1'] * 2)               # insert new column
+
+# new_row = {'col1': 10, 'col2': 20}
+# df_append = df.append(new_row, ignore_index=True)     # append row
+
+
+# # ============================================================
+# # 6. SORTING VALUES
+# # ============================================================
+# df.sort_values(by='col1', ascending=True)
+
+
+# # ============================================================
+# # 7. DUPLICATES HANDLING
+# # ============================================================
+# df.duplicated().sum()                      # count duplicates
+# df_no_duplicates = df.drop_duplicates()   # drop duplicates
+
+# # Drop duplicates based on specific column
+# df_drop_based = df.drop_duplicates(subset=['col1'])
+
+
+# # ============================================================
+# # 8. SELECTING ROWS & COLUMNS
+# # ============================================================
+# # Using loc → label based
+# df.loc[0:5, ['col1', 'col2']]
+
+# # Using iloc → index based
+# df.iloc[0:5, 0:2]
+
+
+# # ============================================================
+# # 9. UNIVARIATE ANALYSIS
+# # ============================================================
+# # Numerical distribution → histogram
+# plt.hist(df['num_col'])
+# plt.title("Histogram")
+# plt.show()
+
+# # Distribution using Seaborn
+# sns.distplot(df['num_col'])
+# plt.title("Distribution Plot")
+# plt.show()
+
+# # Categorical distribution
+# df['cat_col'].value_counts()
+
+
+# # ============================================================
+# # 10. BIVARIATE ANALYSIS
+# # ============================================================
+# # Scatter plot → numeric vs numeric
+# sns.scatterplot(x=df['num_col1'], y=df['num_col2'])
+# plt.title("Scatter Plot")
+# plt.show()
+
+# # Correlation heatmap
+# sns.heatmap(df.corr(), annot=True, cmap='coolwarm')
+# plt.title("Correlation Heatmap")
+# plt.show()
+
+
+# # ============================================================
+# # 11. MULTIVARIATE ANALYSIS
+# # ============================================================
+# # Multiple variable correlation
+# sns.heatmap(df.corr(), annot=True)
+# plt.show()
+
+
+# # ============================================================
+# # 12. OUTLIER REMOVAL (IQR METHOD)
+# # ============================================================
+# def remove_outliers(df, col):
+#     Q1 = df[col].quantile(0.25)
+#     Q3 = df[col].quantile(0.75)
+#     IQR = Q3 - Q1
+
+#     lower = Q1 - 1.5 * IQR
+#     upper = Q3 + 1.5 * IQR
+
+#     return df[(df[col] >= lower) & (df[col] <= upper)]
+
+# df_no_outliers = remove_outliers(df, 'num_col')
+
+
+# # ============================================================
+# # 13. FEATURE SCALING
+# # ============================================================
+
+# # Standardization → converts to mean=0, std=1
+# scaler = StandardScaler()
+# df['scaled_col'] = scaler.fit_transform(df[['num_col']])
+
+# # MinMax Scaling → converts to range 0–1
+# mm = MinMaxScaler()
+# df['minmax_col'] = mm.fit_transform(df[['num_col']])
+
+
+# # ============================================================
+# # 14. ENCODING (CATEGORICAL FEATURES)
+# # ============================================================
+
+# # Label Encoding
+# le = LabelEncoder()
+# df['label_encoded'] = le.fit_transform(df['cat_col'])
+
+# # One-Hot Encoding
+# df_ohe = pd.get_dummies(df, columns=['cat_col'])
+
+# # Ordinal Encoding (Custom Mapping)
+# quality_map = {'Low': 1, 'Medium': 2, 'High': 3}
+# df['quality_encoded'] = df['quality'].map(quality_map)
+
+
+# # ============================================================
+# # 15. HANDLING IMBALANCED DATA
+# # ============================================================
+
+# X = df.drop('target', axis=1)
+# y = df['target']
+
+# # OverSampling
+# ros = RandomOverSampler()
+# X_over, y_over = ros.fit_resample(X, y)
+
+# # UnderSampling
+# rus = RandomUnderSampler()
+# X_under, y_under = rus.fit_resample(X, y)
+
+
+
+# #ANN
+# # ===========================
+# # 1. Import Libraries
+# # ===========================
+# import pandas as pd
+# import numpy as np
+# import matplotlib.pyplot as plt
+# import seaborn as sns
+
+# from sklearn.preprocessing import StandardScaler, MinMaxScaler
+# from sklearn.model_selection import train_test_split
+
+# # Keras / TensorFlow
+# from tensorflow.keras.models import Sequential
+# from tensorflow.keras.layers import Dense, Dropout
+
+# # ===========================
+# # 2. Load Dataset
+# # ===========================
+# df = pd.read_csv("creditcard.csv")
+
+# # Quick check
+# print("\nCheck for nulls:\n", df.isnull().sum())  # confirms no missing data
+
+# # ===========================
+# # 3. Exploratory Data Analysis (optional)
+# # ===========================
+# # Example: distribution of 'price'
+# # plt.figure(figsize=(8,5))
+# # sns.histplot(df['price'], bins=30, kde=True, color='skyblue')
+# # plt.title("Price Distribution")
+# # plt.show()
+
+# # ===========================
+# # 4. Data Wrangling / Cleaning
+# # ===========================
+# # Check duplicates
+# # print("Duplicate rows:", df.duplicated().sum())
+# # df.drop_duplicates(inplace=True)
+
+# # Ensure all features are numeric
+# # print(df.dtypes)
+
+# # ===========================
+# # 5. Feature Scaling
+# # ===========================
+# # Separate features and target
+# X = df.drop('price', axis=1)  # features
+# y = df['price']               # target
+
+# # Standardization (mean=0, std=1)
+# scaler = StandardScaler()
+# X_scaled = scaler.fit_transform(X)
+
+# # Optional: Min-Max scaling (0 to 1)
+# # scaler = MinMaxScaler()
+# # X_scaled = scaler.fit_transform(X)
+
+# # ===========================
+# # 6. Train-Test Split
+# # ===========================
+# X_train, X_test, y_train, y_test = train_test_split(
+#     X_scaled, y, test_size=0.2, random_state=42
+# )
+
+# print("Training set shape:", X_train.shape)
+# print("Testing set shape:", X_test.shape)
+
+# # ===========================
+# # 7. Neural Network Model
+# # ===========================
+# model = Sequential()
+# model.add(Dense(128, activation="relu", input_shape=(X_train.shape[1],)))
+# model.add(Dropout(0.2))
+# model.add(Dense(64, activation="tanh"))
+# model.add(Dense(32, activation="relu"))
+# model.add(Dense(1, activation="linear"))  # Linear for regression
+
+# # Compile model
+# model.compile(loss="mean_squared_error", optimizer="adam", metrics=["mae"])
+
+# # ===========================
+# # 8. Train the Model
+# # ===========================
+# history = model.fit(
+#     X_train, y_train,
+#     epochs=20,
+#     batch_size=32,
+#     validation_data=(X_test, y_test)
+# )
+
+# # ===========================
+# # 9. Evaluate the Model
+# # ===========================
+# loss, mae = model.evaluate(X_test, y_test)
+# print("Test MAE:", mae)
+
+# # ===========================
+# # 1. Import Libraries
+# # ===========================
+# import pandas as pd
+# import numpy as np
+# import matplotlib.pyplot as plt
+# import seaborn as sns
+# from sklearn.preprocessing import StandardScaler, LabelEncoder
+# from sklearn.model_selection import train_test_split
+# from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
+# from tensorflow.keras.models import Sequential
+# from tensorflow.keras.layers import Dense, Dropout
+# from tensorflow.keras.optimizers import Adam
+
+# # ===========================
+# # 2. Load Dataset
+# # ===========================
+# df = pd.read_csv("data.csv")
+
+# print("First 5 rows:\n", df.head())
+# print("\nData types:\n", df.dtypes)
+# print("\nCheck for nulls:\n", df.isnull().sum())
+
+# # ===========================
+# # 3. Encode Categorical Columns
+# # ===========================
+# cat_cols = ["street", "city", "statezip", "country"]
+
+# le = LabelEncoder()
+# for col in cat_cols:
+#     df[col] = le.fit_transform(df[col])
+
+# # ===========================
+# # 4. Data Wrangling / Cleaning
+# # ===========================
+# df.drop_duplicates(inplace=True)
+
+# # Remove 'date' column for MLP
+# X = df.drop(['price', 'date'], axis=1)
+# y = df['price']
+
+# print("Features shape:", X.shape)
+# print("Target shape:", y.shape)
+
+# # ===========================
+# # 5. Feature Scaling
+# # ===========================
+# scaler = StandardScaler()
+# X_scaled = scaler.fit_transform(X)
+
+# # ===========================
+# # 6. Train-Test Split
+# # ===========================
+# X_train, X_test, y_train, y_test = train_test_split(
+#     X_scaled, y, test_size=0.2, random_state=42
+# )
+
+# print("Training set shape:", X_train.shape)
+# print("Testing set shape:", X_test.shape)
+
+# # ===========================
+# # 7. Build MLP Model
+# # ===========================
+# model = Sequential()
+
+# model.add(Dense(64, activation='relu', input_shape=(X_train.shape[1],)))
+# model.add(Dense(32, activation='relu'))
+# model.add(Dropout(0.2))
+# model.add(Dense(1, activation='linear'))
+
+# model.compile(loss='mean_squared_error', optimizer=Adam(learning_rate=0.001))
+
+# # ===========================
+# # 8. Train the Model
+# # ===========================
+# history = model.fit(
+#     X_train, y_train,
+#     validation_data=(X_test, y_test),
+#     epochs=50,
+#     batch_size=32,
+#     verbose=1
+# )
+
+# # ===========================
+# # 9. Evaluate the Model
+# # ===========================
+# y_pred = model.predict(X_test)
+
+# mse = mean_squared_error(y_test, y_pred)
+# mae = mean_absolute_error(y_test, y_pred)
+# r2 = r2_score(y_test, y_pred)
+
+# print(f"\nMean Squared Error (MSE): {mse:.2f}")
+# print(f"Mean Absolute Error (MAE): {mae:.2f}")
+# print(f"R^2 Score: {r2:.2f}")
+
+# # ===========================
+# # 10. Plot Training & Validation Loss
+# # ===========================
+# plt.figure(figsize=(8,5))
+# plt.plot(history.history['loss'], label='Training Loss')
+# plt.plot(history.history['val_loss'], label='Validation Loss')
+# plt.title("MLP Training vs Validation Loss")
+# plt.xlabel("Epochs")
+# plt.ylabel("MSE Loss")
+# plt.legend()
+# plt.show()
+
+# #PCA
+# # ===========================
+# # 1. Import Libraries
+# # ===========================
+# import pandas as pd
+# import numpy as np
+# import matplotlib.pyplot as plt
+# from sklearn.preprocessing import StandardScaler
+# from sklearn.decomposition import PCA
+
+# # ===========================
+# # 2. Load Dataset
+# # ===========================
+# df = pd.read_csv("Finance_data.csv")
+
+# # Quick look at data
+# print("First 5 rows:\n", df.head())
+# print("\nColumns:", df.columns)
+# print("\nData types:\n", df.dtypes)
+# print("\nCheck for nulls:\n", df.isnull().sum())
+
+# # ===========================
+# # 3. Select Relevant Features
+# # ===========================
+# numerical_features = [
+#     'age', 'Mutual_Funds', 'Equity_Market', 'Debentures', 'Government_Bonds',
+#     'Fixed_Deposits', 'PPF', 'Gold', 'Stock_Marktet'
+# ]
+
+# categorical_features = ['gender', 'Investment_Avenues', 'Factor', 'Objective', 
+#                         'Purpose', 'Invest_Monitor', 'Expect', 'Avenue',
+#                         'What are your savings objectives?', 'Reason_Equity', 
+#                         'Reason_Mutual', 'Reason_Bonds', 'Reason_FD', 'Source']
+
+# # ===========================
+# # 4. Handle missing values in categorical columns
+# # ===========================
+# for col in categorical_features:
+#     df[col] = df[col].fillna('Unknown')
+
+# # ===========================
+# # 5. Convert categorical features using pd.get_dummies
+# # ===========================
+# df_encoded = pd.get_dummies(df[numerical_features + categorical_features], drop_first=True)
+
+# print("\nShape after encoding:", df_encoded.shape)
+
+# # ===========================
+# # 6. Standardize the data
+# # ===========================
+# scaler = StandardScaler()
+# X_scaled = scaler.fit_transform(df_encoded)
+
+# # ===========================
+# # 7. Apply PCA
+# # ===========================
+# pca = PCA()
+# X_pca = pca.fit_transform(X_scaled)
+
+# # Explained variance
+# explained_variance = pca.explained_variance_ratio_
+# cumulative_variance = np.cumsum(explained_variance)
+
+# print("\nExplained variance per component:\n", explained_variance)
+# print("\nCumulative explained variance:\n", cumulative_variance)
+
+# # Plot cumulative explained variance
+# plt.figure(figsize=(8,5))
+# plt.plot(range(1, len(cumulative_variance)+1), cumulative_variance, marker='o')
+# plt.xlabel('Number of Principal Components')
+# plt.ylabel('Cumulative Explained Variance')
+# plt.title('PCA Explained Variance')
+# plt.grid()
+# plt.show()
+
+# # ===========================
+# # 8. Choose number of components for 95% variance
+# # ===========================
+# n_components = np.argmax(cumulative_variance >= 0.95) + 1
+# print(f"\nNumber of components to retain (95% variance): {n_components}")
+
+# pca_final = PCA(n_components=n_components)
+# X_reduced = pca_final.fit_transform(X_scaled)
+
+# print(f"Original shape: {X_scaled.shape}")
+# print(f"Reduced shape: {X_reduced.shape}")
+
+# # ===========================
+# # 9. Principal Components Analysis
+# # ===========================
+# components_df = pd.DataFrame(
+#     pca_final.components_, 
+#     columns=df_encoded.columns
+# )
+
+# print("\nPrincipal Components (top features in PC1, PC2, ...):\n")
+# print(components_df.head())
+
+# #Naive Bayes & NLP
+# # -------------------------------
+# #  Naïve Bayes Text Classifier
+# # -------------------------------
+
+# import pandas as pd
+# import string
+# from sklearn.feature_extraction.text import CountVectorizer
+# from sklearn.naive_bayes import MultinomialNB
+# from sklearn.model_selection import train_test_split
+# from sklearn.metrics import accuracy_score, classification_report
+
+# # -------------------------------
+# # 1. Sample Dataset (Replace with CSV)
+# # -------------------------------
+# data = {
+#     'text': [
+#         'Win money now!!!',
+#         'Congratulations, you won a prize',
+#         'Please call me today',
+#         'Let’s meet tomorrow at office',
+#         'Get free coupons now',
+#         'Your order has been shipped'
+#     ],
+#     'label': ['spam', 'spam', 'ham', 'ham', 'spam', 'ham']
+# }
+
+# df = pd.DataFrame(data)
+
+# # -------------------------------
+# # 2. Preprocessing Function
+# # -------------------------------
+
+# def clean_text(text):
+#     text = text.lower()                                    # lowercase
+#     text = text.translate(str.maketrans('', '', string.punctuation))   # remove punctuation
+#     return text
+
+# df['cleaned'] = df['text'].apply(clean_text)
+
+# # -------------------------------
+# # 3. Vectorization
+# # -------------------------------
+# vectorizer = CountVectorizer(stop_words='english')
+# X = vectorizer.fit_transform(df['cleaned'])
+# y = df['label']
+
+# # -------------------------------
+# # 4. Train-Test Split
+# # -------------------------------
+# X_train, X_test, y_train, y_test = train_test_split(
+#     X, y, test_size=0.3, random_state=42
+# )
+
+# # -------------------------------
+# # 5. Train Naïve Bayes
+# # -------------------------------
+# model = MultinomialNB()
+# model.fit(X_train, y_train)
+
+# # -------------------------------
+# # 6. Evaluation
+# # -------------------------------
+# y_pred = model.predict(X_test)
+
+# print("Accuracy:", accuracy_score(y_test, y_pred))
+# print("\nClassification Report:")
+# print(classification_report(y_test, y_pred))
+
+# # -------------------------------
+# # 7. Predict New Text
+# # -------------------------------
+# new_text = ["Free gift voucher for you"]
+# clean_new = clean_text(new_text[0])
+# new_vec = vectorizer.transform([clean_new])
+
+# print("\nNew Text Prediction:", model.predict(new_vec)[0])
+
+# Here is the **simplest and easiest explanation** of all Naïve Bayes types — in very clear, short sentences so you can remember them for your exam.
+
+# ---
+
+# # #  **Naïve Bayes – Simple Explanation**
+
+# # Naïve Bayes has different types because different data has different shapes and distributions.
+
+# # Each type is used depending on whether your data is **numerical, categorical, count-based, or binary**.
+
+# # ---
+
+# # #  **1. Gaussian Naïve Bayes**
+
+# # * Use this when your features are **numerical**.
+# # * Example: age, salary, marks, height, weight.
+# # * It assumes the numbers follow a **normal bell-shaped curve**.
+# # * Best for continuous values.
+
+# # ---
+
+# # #  **2. Multinomial Naïve Bayes**
+
+# # * Use this when your features represent **counts**.
+# # * Example: number of times a word appears in text.
+# # * Mostly used in **text classification** with Bag-of-Words.
+# # * It works with whole numbers (0, 1, 2, 3…).
+
+# # ---
+
+# # #  **3. Bernoulli Naïve Bayes**
+
+# # * Use this when your features are **binary (0 or 1)**.
+# # * Example: word present (1) or not present (0).
+# # * Good for text classification using **word presence** instead of counts.
+
+# # ---
+
+# # #  **4. Categorical Naïve Bayes**
+
+# # * Use this for **categorical (non-numeric)** features.
+# # * Example: color (red, blue, green), gender (male/female).
+# # * It works when your data is made of discrete labels.
+
+# # ---
+
+# # #  **5. Complement Naïve Bayes**
+
+# # * It is used when your dataset is **imbalanced** (one class is smaller).
+# # * It is a better version of Multinomial NB for text.
+# # * Works very well for spam detection and sentiment analysis with imbalance.
+
+# # ---
+
+# # #  **6. Gaussian Mixture Naïve Bayes**
+
+# # * Use this when numerical data does **not** follow a simple bell curve.
+# # * It uses multiple small bell curves to fit complex numerical data.
+# # * Used in speech processing or sensor analysis.
+
+# # ---
+
+# # #  **Which Naïve Bayes should I choose? (Super Simple)**
+
+# # | Your Data                        | Use This                |
+# # | -------------------------------- | ----------------------- |
+# # | Numbers (age, marks, salary)     | **Gaussian NB**         |
+# # | Word counts                      | **Multinomial NB**      |
+# # | Word present or not (0/1)        | **Bernoulli NB**        |
+# # | Categories like colors or gender | **Categorical NB**      |
+# # | Imbalanced text dataset          | **Complement NB**       |
+# # | Complex numerical data           | **Gaussian Mixture NB** |
+
+
+# # ===========================================
+# # 1. Import Libraries
+# # ===========================================
+# import pandas as pd
+# import string
+# import re
+# from sklearn.model_selection import train_test_split
+# from sklearn.feature_extraction.text import TfidfVectorizer
+# from sklearn.naive_bayes import MultinomialNB
+# from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+
+# # ===========================================
+# # 2. Load Dataset
+# # ===========================================
+# df = pd.read_csv("SMSSpamCollection.csv", names=['label', 'message'])
+
+# print(df.head())
+
+# # ===========================================
+# # 3. Text Preprocessing Function
+# # ===========================================
+# def clean_text(text):
+#     text = text.lower()                               # lowercase
+#     text = re.sub(r'\d+', '', text)                   # remove numbers
+#     text = text.translate(str.maketrans('', '', string.punctuation))  # remove punctuation
+#     text = text.strip()                               # remove extra spaces
+#     return text
+
+# df['clean_msg'] = df['message'].apply(clean_text)
+
+# # ===========================================
+# # 4. Split Data
+# # ===========================================
+# X_train, X_test, y_train, y_test = train_test_split(
+#     df['clean_msg'], df['label'], test_size=0.2, random_state=42
+# )
+
+# # ===========================================
+# # 5. Convert Text to Numerical (TF-IDF)
+# # ===========================================
+# vectorizer = TfidfVectorizer()
+# X_train_vec = vectorizer.fit_transform(X_train)
+# X_test_vec = vectorizer.transform(X_test)
+
+# # ===========================================
+# # 6. Train Multinomial Naïve Bayes
+# # ===========================================
+# model = MultinomialNB()
+# model.fit(X_train_vec, y_train)
+
+# # ===========================================
+# # 7. Predictions
+# # ===========================================
+# y_pred = model.predict(X_test_vec)
+
+# # ===========================================
+# # 8. Evaluation
+# # ===========================================
+# print("\nAccuracy:", accuracy_score(y_test, y_pred))
+# print("\nClassification Report:\n", classification_report(y_test, y_pred))
+# print("\nConfusion Matrix:\n", confusion_matrix(y_test, y_pred))
+
+# # ===========================
+# # 1. Import Libraries
+# # ===========================
+# import pandas as pd
+# import numpy as np
+# import matplotlib.pyplot as plt
+# import seaborn as sns
+# from sklearn.preprocessing import StandardScaler, LabelEncoder
+# from sklearn.model_selection import train_test_split
+# from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
+# from tensorflow.keras.models import Sequential
+# from tensorflow.keras.layers import Dense, Dropout
+# from tensorflow.keras.optimizers import Adam
+
+# # ===========================
+# # 2. Load Dataset
+# # ===========================
+# df = pd.read_csv("data.csv")
+
+# print("First 5 rows:\n", df.head())
+# print("\nData types:\n", df.dtypes)
+# print("\nCheck for nulls:\n", df.isnull().sum())
+
+# # ===========================
+# # 3. Data Wrangling / Cleaning
+# # ===========================
+# df.drop_duplicates(inplace=True)
+
+# # ---- Extract ZIP from statezip ----
+# df["zipcode"] = df["statezip"].str.extract(r"(\d+)", expand=False).astype(float)
+
+# # ---- Label encode city ----
+# le_city = LabelEncoder()
+# df["city_encoded"] = le_city.fit_transform(df["city"])
+
+# # ---- Drop unnecessary columns ----
+# df = df.drop(["street", "city", "statezip", "country", "date"], axis=1)
+
+# # ===========================
+# # 4. Define X and y
+# # ===========================
+# X = df.drop("price", axis=1)
+# y = df["price"]
+
+# print("\nUpdated Feature Columns:\n", X.columns)
+
+# # ===========================
+# # 5. Feature Scaling
+# # ===========================
+# scaler = StandardScaler()
+# X_scaled = scaler.fit_transform(X)
+
+# # ===========================
+# # 6. Train-Test Split
+# # ===========================
+# X_train, X_test, y_train, y_test = train_test_split(
+#     X_scaled, y, test_size=0.2, random_state=42
+# )
+
+# print("Training set shape:", X_train.shape)
+# print("Testing set shape:", X_test.shape)
+
+# # ===========================
+# # 7. Build MLP Model
+# # ===========================
+# model = Sequential()
+
+# model.add(Dense(64, activation='relu', input_shape=(X_train.shape[1],)))
+# model.add(Dense(32, activation='relu'))
+# model.add(Dropout(0.2))
+# model.add(Dense(1, activation='linear'))
+
+# model.compile(loss='mean_squared_error', optimizer=Adam(learning_rate=0.001))
+
+# # ===========================
+# # 8. Train the Model
+# # ===========================
+# history = model.fit(
+#     X_train, y_train,
+#     validation_data=(X_test, y_test),
+#     epochs=50,
+#     batch_size=32,
+#     verbose=1
+# )
+
+# # ===========================
+# # 9. Evaluate the Model
+# # ===========================
+# y_pred = model.predict(X_test)
+
+# mse = mean_squared_error(y_test, y_pred)
+# mae = mean_absolute_error(y_test, y_pred)
+# r2 = r2_score(y_test, y_pred)
+
+# print(f"\nMean Squared Error (MSE): {mse:.2f}")
+# print(f"Mean Absolute Error (MAE): {mae:.2f}")
+# print(f"R^2 Score: {r2:.2f}")
+
+# # ===========================
+# # 10. Plot Training & Validation Loss
+# # ===========================
+# plt.figure(figsize=(8,5))
+# plt.plot(history.history['loss'], label='Training Loss')
+# plt.plot(history.history['val_loss'], label='Validation Loss')
+# plt.title("MLP Training vs Validation Loss")
+# plt.xlabel("Epochs")
+# plt.ylabel("MSE Loss")
+# plt.legend()
+# plt.show()
+
+# # SVM
+# """
+# COMPLETE SVM IMPLEMENTATION - ALL IN ONE FILE
+# National University of Computer & Emerging Sciences
+# Machine Learning Lab - SVM Implementation
+# Instructor: ALISHBA SUBHANI
+# """
+
+# import numpy as np
+# import pandas as pd
+# import matplotlib.pyplot as plt
+# import seaborn as sns
+# from sklearn.model_selection import train_test_split, GridSearchCV, cross_val_score
+# from sklearn.svm import SVC, LinearSVC
+# from sklearn.metrics import (accuracy_score, classification_report, confusion_matrix, 
+#                            roc_curve, auc, precision_score, recall_score, f1_score)
+# from sklearn.preprocessing import StandardScaler, LabelEncoder
+# from sklearn.datasets import make_classification, make_blobs, make_circles, make_moons
+# from sklearn.inspection import DecisionBoundaryDisplay
+# import warnings
+# warnings.filterwarnings('ignore')
+
+# # ============================================================================
+# # SECTION 1: BASIC SVM IMPLEMENTATION
+# # ============================================================================
+
+# def basic_svm_implementation():
+#     """Basic SVM implementation with iris dataset"""
+#     print("\n" + "="*60)
+#     print("SECTION 1: BASIC SVM IMPLEMENTATION")
+#     print("="*60)
+    
+#     # Load or create dataset
+#     from sklearn.datasets import load_iris
+#     iris = load_iris()
+#     X = iris.data[:, :2]  # Using only first 2 features for visualization
+#     y = iris.target
+    
+#     # Select only 2 classes for binary classification
+#     X = X[y != 2]
+#     y = y[y != 2]
+    
+#     # Split data
+#     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+    
+#     # Create SVM model
+#     svm_model = SVC(kernel='linear', C=1.0)
+#     svm_model.fit(X_train, y_train)
+    
+#     # Predict
+#     y_pred = svm_model.predict(X_test)
+    
+#     # Evaluate
+#     accuracy = accuracy_score(y_test, y_pred)
+#     print(f"\nSVM Accuracy: {accuracy:.4f}")
+#     print(f"Number of Support Vectors: {len(svm_model.support_vectors_)}")
+#     print(f"Support Vector Indices: {svm_model.support_[:5]}...")  # Show first 5
+    
+#     print("\nClassification Report:")
+#     print(classification_report(y_test, y_pred))
+    
+#     return svm_model, X_train, y_train, X_test, y_test
+
+# # ============================================================================
+# # SECTION 2: DIFFERENT SVM KERNELS
+# # ============================================================================
+
+# def compare_svm_kernels():
+#     """Compare different SVM kernels"""
+#     print("\n" + "="*60)
+#     print("SECTION 2: COMPARING DIFFERENT SVM KERNELS")
+#     print("="*60)
+    
+#     # Generate sample data
+#     np.random.seed(42)
+#     X, y = make_classification(n_samples=200, n_features=2, n_redundant=0, 
+#                               n_informative=2, random_state=1, n_clusters_per_class=1)
+    
+#     # Split data
+#     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+    
+#     # Define kernels to compare
+#     kernels = [
+#         ('linear', SVC(kernel='linear', C=1.0)),
+#         ('rbf', SVC(kernel='rbf', C=1.0, gamma='scale')),
+#         ('poly', SVC(kernel='poly', degree=3, C=1.0)),
+#         ('sigmoid', SVC(kernel='sigmoid', C=1.0))
+#     ]
+    
+#     results = []
+#     for kernel_name, model in kernels:
+#         model.fit(X_train, y_train)
+#         train_acc = model.score(X_train, y_train)
+#         test_acc = model.score(X_test, y_test)
+#         results.append([kernel_name, train_acc, test_acc, len(model.support_vectors_)])
+    
+#     # Create results DataFrame
+#     df_results = pd.DataFrame(results, 
+#                              columns=['Kernel', 'Train Accuracy', 'Test Accuracy', 'Support Vectors'])
+    
+#     print("\nKernel Comparison Results:")
+#     print(df_results.to_string(index=False))
+    
+#     # Visualize decision boundaries
+#     fig, axes = plt.subplots(2, 2, figsize=(12, 10))
+#     axes = axes.ravel()
+    
+#     for idx, (kernel_name, model) in enumerate(kernels):
+#         model.fit(X_train, y_train)
+        
+#         DecisionBoundaryDisplay.from_estimator(
+#             model, X, ax=axes[idx],
+#             response_method="predict",
+#             plot_method="pcolormesh",
+#             alpha=0.3,
+#             cmap=plt.cm.RdYlBu
+#         )
+        
+#         axes[idx].scatter(X_train[:, 0], X_train[:, 1], c=y_train, edgecolors='k', label='Train')
+#         axes[idx].scatter(X_test[:, 0], X_test[:, 1], c=y_test, marker='x', s=100, label='Test')
+        
+#         accuracy = model.score(X_test, y_test)
+#         axes[idx].set_title(f'{kernel_name.upper()} Kernel\nAccuracy: {accuracy:.3f}')
+#         axes[idx].set_xlabel('Feature 1')
+#         axes[idx].set_ylabel('Feature 2')
+#         axes[idx].legend()
+    
+#     plt.suptitle('SVM Decision Boundaries with Different Kernels', fontsize=14, y=1.02)
+#     plt.tight_layout()
+#     plt.show()
+    
+#     return df_results
+
+# # ============================================================================
+# # SECTION 3: C PARAMETER (REGULARIZATION)
+# # ============================================================================
+
+# def effect_of_C_parameter():
+#     """Demonstrate effect of C parameter on SVM"""
+#     print("\n" + "="*60)
+#     print("SECTION 3: EFFECT OF C PARAMETER (REGULARIZATION)")
+#     print("="*60)
+    
+#     # Create dataset with some overlap
+#     X, y = make_blobs(n_samples=100, centers=2, random_state=42, cluster_std=2)
+    
+#     # Different C values
+#     C_values = [0.01, 0.1, 1, 10, 100]
+    
+#     fig, axes = plt.subplots(1, len(C_values), figsize=(18, 4))
+    
+#     for idx, C in enumerate(C_values):
+#         svm = SVC(kernel='linear', C=C)
+#         svm.fit(X, y)
+        
+#         # Get support vectors
+#         support_vectors = svm.support_vectors_
+        
+#         # Create mesh for decision boundary
+#         xx, yy = np.meshgrid(
+#             np.linspace(X[:, 0].min() - 1, X[:, 0].max() + 1, 200),
+#             np.linspace(X[:, 1].min() - 1, X[:, 1].max() + 1, 200)
+#         )
+        
+#         Z = svm.decision_function(np.c_[xx.ravel(), yy.ravel()])
+#         Z = Z.reshape(xx.shape)
+        
+#         # Plot decision boundary and margin
+#         axes[idx].contour(xx, yy, Z, colors='k', levels=[-1, 0, 1], alpha=0.5,
+#                          linestyles=['--', '-', '--'])
+#         axes[idx].contourf(xx, yy, Z, alpha=0.3, cmap=plt.cm.RdYlBu)
+        
+#         # Plot data points
+#         axes[idx].scatter(X[:, 0], X[:, 1], c=y, edgecolors='k', cmap=plt.cm.RdYlBu)
+        
+#         # Plot support vectors
+#         axes[idx].scatter(support_vectors[:, 0], support_vectors[:, 1], 
+#                          s=100, facecolors='none', edgecolors='red', 
+#                          linewidths=2, label='Support Vectors')
+        
+#         axes[idx].set_title(f'C = {C}\nSV: {len(support_vectors)}')
+#         axes[idx].set_xlabel('Feature 1')
+#         axes[idx].set_ylabel('Feature 2')
+#         axes[idx].legend(loc='upper right')
+    
+#     plt.suptitle('Effect of C Parameter on Margin Width and Support Vectors', fontsize=14, y=1.05)
+#     plt.tight_layout()
+#     plt.show()
+    
+#     print("\nExplanation of C parameter:")
+#     print("- Small C (e.g., 0.01): Large margin, more misclassifications allowed")
+#     print("- Large C (e.g., 100): Small margin, fewer misclassifications")
+#     print("- C controls trade-off between margin width and classification error")
+    
+#     return C_values
+
+# # ============================================================================
+# # SECTION 4: GAMMA PARAMETER (RBF KERNEL)
+# # ============================================================================
+
+# def effect_of_gamma_parameter():
+#     """Demonstrate effect of gamma parameter in RBF kernel"""
+#     print("\n" + "="*60)
+#     print("SECTION 4: EFFECT OF GAMMA PARAMETER (RBF KERNEL)")
+#     print("="*60)
+    
+#     # Create non-linear dataset
+#     X, y = make_circles(n_samples=200, factor=0.5, noise=0.1, random_state=42)
+    
+#     # Different gamma values
+#     gamma_values = [0.1, 1, 10, 100]
+    
+#     fig, axes = plt.subplots(1, len(gamma_values), figsize=(16, 4))
+    
+#     for idx, gamma in enumerate(gamma_values):
+#         svm = SVC(kernel='rbf', gamma=gamma, C=1.0)
+#         svm.fit(X, y)
+        
+#         # Create mesh
+#         h = 0.02  # step size
+#         x_min, x_max = X[:, 0].min() - 0.5, X[:, 0].max() + 0.5
+#         y_min, y_max = X[:, 1].min() - 0.5, X[:, 1].max() + 0.5
+#         xx, yy = np.meshgrid(np.arange(x_min, x_max, h),
+#                             np.arange(y_min, y_max, h))
+        
+#         # Predict
+#         Z = svm.predict(np.c_[xx.ravel(), yy.ravel()])
+#         Z = Z.reshape(xx.shape)
+        
+#         # Plot decision boundary
+#         axes[idx].contourf(xx, yy, Z, alpha=0.3, cmap=plt.cm.RdYlBu)
+#         axes[idx].contour(xx, yy, Z, colors='k', linewidths=0.5, alpha=0.5)
+        
+#         # Plot data points
+#         axes[idx].scatter(X[:, 0], X[:, 1], c=y, edgecolors='k', cmap=plt.cm.RdYlBu)
+        
+#         # Plot support vectors
+#         if hasattr(svm, 'support_vectors_'):
+#             axes[idx].scatter(svm.support_vectors_[:, 0], svm.support_vectors_[:, 1], 
+#                             s=50, facecolors='none', edgecolors='red', linewidths=1.5)
+        
+#         accuracy = svm.score(X, y)
+#         axes[idx].set_title(f'Gamma = {gamma}\nAccuracy: {accuracy:.3f}\nSV: {len(svm.support_vectors_)}')
+#         axes[idx].set_xlabel('Feature 1')
+#         axes[idx].set_ylabel('Feature 2')
+    
+#     plt.suptitle('Effect of Gamma Parameter on Decision Boundary Complexity', fontsize=14, y=1.05)
+#     plt.tight_layout()
+#     plt.show()
+    
+#     print("\nExplanation of gamma parameter in RBF kernel:")
+#     print("- Small gamma (e.g., 0.1): Far points influence boundary, smoother decision boundary")
+#     print("- Large gamma (e.g., 100): Only nearby points matter, complex/wiggly boundary")
+#     print("- High gamma can lead to overfitting!")
+    
+#     return gamma_values
+
+# # ============================================================================
+# # SECTION 5: SVM HYPERPARAMETER TUNING
+# # ============================================================================
+
+# def svm_hyperparameter_tuning():
+#     """Grid search for SVM hyperparameter tuning"""
+#     print("\n" + "="*60)
+#     print("SECTION 5: SVM HYPERPARAMETER TUNING WITH GRID SEARCH")
+#     print("="*60)
+    
+#     # Create complex dataset
+#     X, y = make_moons(n_samples=300, noise=0.3, random_state=42)
+    
+#     # Split data
+#     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+    
+#     # Define parameter grid
+#     param_grid = {
+#         'C': [0.1, 1, 10, 100],
+#         'gamma': ['scale', 'auto', 0.1, 1, 10],
+#         'kernel': ['rbf', 'poly', 'sigmoid']
+#     }
+    
+#     print("Performing Grid Search with 5-fold CV...")
+#     print(f"Parameter grid: {param_grid}")
+    
+#     # Grid search with cross-validation
+#     grid_search = GridSearchCV(
+#         SVC(), 
+#         param_grid, 
+#         cv=5,
+#         scoring='accuracy',
+#         verbose=0,
+#         n_jobs=-1
+#     )
+    
+#     grid_search.fit(X_train, y_train)
+    
+#     # Results
+#     print("\n" + "-"*40)
+#     print("GRID SEARCH RESULTS")
+#     print("-"*40)
+#     print(f"Best Parameters: {grid_search.best_params_}")
+#     print(f"Best Cross-validation Score: {grid_search.best_score_:.4f}")
+#     print(f"Test Set Accuracy: {grid_search.score(X_test, y_test):.4f}")
+    
+#     # Get all results
+#     cv_results = pd.DataFrame(grid_search.cv_results_)
+#     print("\nTop 5 Parameter Combinations:")
+#     top_results = cv_results.nsmallest(5, 'rank_test_score')[['params', 'mean_test_score', 'std_test_score']]
+#     print(top_results.to_string(index=False))
+    
+#     # Train best model
+#     best_svm = grid_search.best_estimator_
+    
+#     # Visualize best model
+#     plt.figure(figsize=(10, 6))
+    
+#     DecisionBoundaryDisplay.from_estimator(
+#         best_svm, X, 
+#         response_method="predict",
+#         plot_method="pcolormesh",
+#         alpha=0.3,
+#         cmap=plt.cm.RdYlBu
+#     )
+    
+#     plt.scatter(X_train[:, 0], X_train[:, 1], c=y_train, edgecolors='k', label='Train')
+#     plt.scatter(X_test[:, 0], X_test[:, 1], c=y_test, marker='x', s=100, label='Test')
+    
+#     kernel = best_svm.kernel
+#     C = best_svm.C
+#     gamma = best_svm.gamma if hasattr(best_svm, 'gamma') else 'N/A'
+    
+#     plt.title(f'Best SVM Model\nKernel: {kernel}, C: {C}, Gamma: {gamma}\nTest Accuracy: {grid_search.score(X_test, y_test):.3f}')
+#     plt.xlabel('Feature 1')
+#     plt.ylabel('Feature 2')
+#     plt.legend()
+#     plt.show()
+    
+#     return grid_search
+
+# # ============================================================================
+# # SECTION 6: COMPLETE EVALUATION METRICS
+# # ============================================================================
+
+# def complete_svm_evaluation():
+#     """Complete SVM evaluation with all metrics"""
+#     print("\n" + "="*60)
+#     print("SECTION 6: COMPLETE SVM EVALUATION METRICS")
+#     print("="*60)
+    
+#     # Load breast cancer dataset
+#     from sklearn.datasets import load_breast_cancer
+#     data = load_breast_cancer()
+#     X, y = data.data, data.target
+#     feature_names = data.feature_names
+#     target_names = data.target_names
+    
+#     print(f"Dataset: {data.DESCR[:200]}...")
+#     print(f"Features: {X.shape[1]}, Samples: {X.shape[0]}")
+#     print(f"Classes: {target_names}")
+    
+#     # Split data
+#     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+    
+#     # Scale features (important for SVM!)
+#     scaler = StandardScaler()
+#     X_train_scaled = scaler.fit_transform(X_train)
+#     X_test_scaled = scaler.transform(X_test)
+    
+#     # Train SVM with RBF kernel
+#     svm_model = SVC(kernel='rbf', C=10, gamma='scale', probability=True, random_state=42)
+#     svm_model.fit(X_train_scaled, y_train)
+    
+#     # Predict
+#     y_pred = svm_model.predict(X_test_scaled)
+#     y_pred_proba = svm_model.predict_proba(X_test_scaled)[:, 1]
+    
+#     # 1. Calculate all metrics
+#     accuracy = accuracy_score(y_test, y_pred)
+#     precision = precision_score(y_test, y_pred)
+#     recall = recall_score(y_test, y_pred)
+#     f1 = f1_score(y_test, y_pred)
+    
+#     # Sensitivity = Recall
+#     sensitivity = recall
+    
+#     # Specificity = TN / (TN + FP)
+#     tn, fp, fn, tp = confusion_matrix(y_test, y_pred).ravel()
+#     specificity = tn / (tn + fp) if (tn + fp) > 0 else 0
+    
+#     # Geometric Mean
+#     gmean = np.sqrt(sensitivity * specificity)
+    
+#     # False Discovery Rate
+#     fdr = fp / (fp + tp) if (fp + tp) > 0 else 0
+    
+#     # False Omission Rate
+#     for_ = fn / (fn + tn) if (fn + tn) > 0 else 0
+    
+#     # Matthews Correlation Coefficient
+#     mcc_numerator = (tp * tn) - (fp * fn)
+#     mcc_denominator = np.sqrt((tp + fp) * (tp + fn) * (tn + fp) * (tn + fn))
+#     mcc = mcc_numerator / mcc_denominator if mcc_denominator > 0 else 0
+    
+#     # 2. Create metrics table
+#     metrics_df = pd.DataFrame({
+#         'Metric': ['Accuracy', 'Precision', 'Recall/Sensitivity', 'Specificity', 
+#                    'F1-Score', 'Geometric Mean', 'False Discovery Rate', 
+#                    'False Omission Rate', 'Matthews Correlation Coefficient'],
+#         'Formula': [
+#             '(TP+TN)/(TP+TN+FP+FN)',
+#             'TP/(TP+FP)',
+#             'TP/(TP+FN)',
+#             'TN/(TN+FP)',
+#             '2*(Precision*Recall)/(Precision+Recall)',
+#             'sqrt(Sensitivity*Specificity)',
+#             'FP/(FP+TP)',
+#             'FN/(FN+TN)',
+#             '(TP*TN-FP*FN)/sqrt((TP+FP)(TP+FN)(TN+FP)(TN+FN))'
+#         ],
+#         'Value': [accuracy, precision, sensitivity, specificity, f1, 
+#                   gmean, fdr, for_, mcc]
+#     })
+    
+#     print("\nCOMPREHENSIVE EVALUATION METRICS:")
+#     print("="*80)
+#     print(metrics_df.to_string(index=False, float_format=lambda x: f"{x:.4f}" if isinstance(x, float) else str(x)))
+    
+#     # 3. Confusion Matrix
+#     cm = confusion_matrix(y_test, y_pred)
+#     plt.figure(figsize=(10, 4))
+    
+#     plt.subplot(1, 2, 1)
+#     sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', 
+#                 xticklabels=target_names, 
+#                 yticklabels=target_names)
+#     plt.title('Confusion Matrix')
+#     plt.ylabel('True Label')
+#     plt.xlabel('Predicted Label')
+    
+#     # 4. ROC Curve
+#     plt.subplot(1, 2, 2)
+#     fpr, tpr, thresholds = roc_curve(y_test, y_pred_proba)
+#     roc_auc = auc(fpr, tpr)
+    
+#     plt.plot(fpr, tpr, color='darkorange', lw=2, 
+#              label=f'ROC curve (AUC = {roc_auc:.3f})')
+#     plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--', label='Random')
+#     plt.xlim([0.0, 1.0])
+#     plt.ylim([0.0, 1.05])
+#     plt.xlabel('False Positive Rate (1-Specificity)')
+#     plt.ylabel('True Positive Rate (Sensitivity/Recall)')
+#     plt.title('Receiver Operating Characteristic (ROC) Curve')
+#     plt.legend(loc="lower right")
+    
+#     plt.suptitle('SVM Model Evaluation', fontsize=14, y=1.05)
+#     plt.tight_layout()
+#     plt.show()
+    
+#     # 5. Print classification report
+#     print("\n" + "-"*60)
+#     print("CLASSIFICATION REPORT:")
+#     print("-"*60)
+#     print(classification_report(y_test, y_pred, target_names=target_names))
+    
+#     # 6. Support vectors info
+#     print(f"\nSupport Vectors: {len(svm_model.support_vectors_)}")
+#     print(f"Support Vector Ratio: {len(svm_model.support_vectors_)/len(X_train):.2%}")
+    
+#     return metrics_df, svm_model
+
+# # ============================================================================
+# # SECTION 7: MULTI-CLASS SVM
+# # ============================================================================
+
+# def multiclass_svm():
+#     """SVM for multi-class classification"""
+#     print("\n" + "="*60)
+#     print("SECTION 7: MULTI-CLASS SVM CLASSIFICATION")
+#     print("="*60)
+    
+#     # Load iris dataset (3 classes)
+#     from sklearn.datasets import load_iris
+#     iris = load_iris()
+#     X = iris.data
+#     y = iris.target
+    
+#     print(f"Dataset: Iris (3 classes)")
+#     print(f"Classes: {iris.target_names}")
+#     print(f"Samples per class: {np.bincount(y)}")
+    
+#     # Split data
+#     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+    
+#     # Scale data
+#     scaler = StandardScaler()
+#     X_train_scaled = scaler.fit_transform(X_train)
+#     X_test_scaled = scaler.transform(X_test)
+    
+#     # Different multi-class strategies
+#     strategies = [
+#         ('One-vs-Rest (OvR)', SVC(kernel='rbf', C=1.0, decision_function_shape='ovr')),
+#         ('One-vs-One (OvO)', SVC(kernel='rbf', C=1.0, decision_function_shape='ovo')),
+#         ('LinearSVC (OvR)', LinearSVC(C=1.0, max_iter=10000, random_state=42))
+#     ]
+    
+#     results = []
+#     for strategy_name, model in strategies:
+#         model.fit(X_train_scaled, y_train)
+#         train_acc = model.score(X_train_scaled, y_train)
+#         test_acc = model.score(X_test_scaled, y_test)
+        
+#         if hasattr(model, 'support_vectors_'):
+#             n_sv = len(model.support_vectors_)
+#         else:
+#             n_sv = 'N/A'
+            
+#         results.append([strategy_name, train_acc, test_acc, n_sv])
+    
+#     # Create results DataFrame
+#     df_results = pd.DataFrame(results, 
+#                              columns=['Strategy', 'Train Accuracy', 'Test Accuracy', 'Support Vectors'])
+    
+#     print("\nMulti-class SVM Strategies Comparison:")
+#     print(df_results.to_string(index=False, float_format=lambda x: f"{x:.4f}" if isinstance(x, float) else str(x)))
+    
+#     # Confusion matrix for best model
+#     best_model = strategies[0][1]  # Use OvR
+#     best_model.fit(X_train_scaled, y_train)
+#     y_pred = best_model.predict(X_test_scaled)
+    
+#     cm = confusion_matrix(y_test, y_pred)
+    
+#     plt.figure(figsize=(8, 6))
+#     sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', 
+#                 xticklabels=iris.target_names, 
+#                 yticklabels=iris.target_names)
+#     plt.title(f'Confusion Matrix - One-vs-Rest Strategy\nTest Accuracy: {test_acc:.3f}')
+#     plt.ylabel('True Label')
+#     plt.xlabel('Predicted Label')
+#     plt.show()
+    
+#     return df_results
+
+# # ============================================================================
+# # SECTION 8: COMPARISON WITH OTHER CLASSIFIERS (KNN)
+# # ============================================================================
+
+# def compare_svm_knn():
+#     """Compare SVM with KNN classifier"""
+#     print("\n" + "="*60)
+#     print("SECTION 8: SVM vs KNN COMPARISON")
+#     print("="*60)
+    
+#     # Create synthetic dataset
+#     X, y = make_classification(n_samples=500, n_features=10, n_informative=5, 
+#                               n_redundant=2, random_state=42)
+    
+#     # Split data
+#     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+    
+#     # Scale data
+#     scaler = StandardScaler()
+#     X_train_scaled = scaler.fit_transform(X_train)
+#     X_test_scaled = scaler.transform(X_test)
+    
+#     # Train SVM
+#     svm_model = SVC(kernel='rbf', C=10, gamma='scale', probability=True)
+#     svm_model.fit(X_train_scaled, y_train)
+    
+#     # Train KNN
+#     from sklearn.neighbors import KNeighborsClassifier
+#     knn_model = KNeighborsClassifier(n_neighbors=5)
+#     knn_model.fit(X_train_scaled, y_train)
+    
+#     # Predictions
+#     svm_pred = svm_model.predict(X_test_scaled)
+#     knn_pred = knn_model.predict(X_test_scaled)
+    
+#     svm_proba = svm_model.predict_proba(X_test_scaled)[:, 1]
+#     knn_proba = knn_model.predict_proba(X_test_scaled)[:, 1]
+    
+#     # Calculate metrics
+#     def calculate_metrics(y_true, y_pred, y_proba, model_name):
+#         accuracy = accuracy_score(y_true, y_pred)
+#         precision = precision_score(y_true, y_pred)
+#         recall = recall_score(y_true, y_pred)
+#         f1 = f1_score(y_true, y_pred)
+        
+#         # Confusion matrix
+#         tn, fp, fn, tp = confusion_matrix(y_true, y_pred).ravel()
+#         specificity = tn / (tn + fp) if (tn + fp) > 0 else 0
+        
+#         # ROC AUC
+#         fpr, tpr, _ = roc_curve(y_true, y_proba)
+#         roc_auc = auc(fpr, tpr)
+        
+#         return [model_name, accuracy, precision, recall, specificity, f1, roc_auc]
+    
+#     # Create comparison table
+#     svm_metrics = calculate_metrics(y_test, svm_pred, svm_proba, "SVM (RBF)")
+#     knn_metrics = calculate_metrics(y_test, knn_pred, knn_proba, "KNN (k=5)")
+    
+#     comparison_df = pd.DataFrame([svm_metrics, knn_metrics],
+#                                 columns=['Model', 'Accuracy', 'Precision', 'Recall', 
+#                                         'Specificity', 'F1-Score', 'ROC-AUC'])
+    
+#     print("\nSVM vs KNN Performance Comparison:")
+#     print("="*80)
+#     print(comparison_df.to_string(index=False, float_format=lambda x: f"{x:.4f}" if isinstance(x, float) else str(x)))
+    
+#     # Plot ROC curves
+#     plt.figure(figsize=(10, 6))
+    
+#     for model, pred, proba, color, label in [
+#         (svm_model, svm_pred, svm_proba, 'blue', 'SVM (RBF)'),
+#         (knn_model, knn_pred, knn_proba, 'green', 'KNN (k=5)')
+#     ]:
+#         fpr, tpr, _ = roc_curve(y_test, proba)
+#         roc_auc = auc(fpr, tpr)
+#         plt.plot(fpr, tpr, color=color, lw=2, 
+#                  label=f'{label} (AUC = {roc_auc:.3f})')
+    
+#     plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--', label='Random')
+#     plt.xlim([0.0, 1.0])
+#     plt.ylim([0.0, 1.05])
+#     plt.xlabel('False Positive Rate')
+#     plt.ylabel('True Positive Rate')
+#     plt.title('ROC Curve Comparison: SVM vs KNN')
+#     plt.legend(loc="lower right")
+#     plt.grid(True, alpha=0.3)
+#     plt.show()
+    
+#     return comparison_df
+
+# # ============================================================================
+# # SECTION 9: PRACTICAL TASK IMPLEMENTATION
+# # ============================================================================
+
+# def practical_task_implementation():
+#     """Implementation of practical tasks from the lab manual"""
+#     print("\n" + "="*60)
+#     print("SECTION 9: PRACTICAL TASK IMPLEMENTATION")
+#     print("="*60)
+    
+#     print("\nTask 1: Apply SVM with different kernels and compare")
+#     print("Task 2: Tune hyperparameters C and gamma")
+#     print("Task 3: Compare with KNN classifier")
+#     print("Task 4: Generate comprehensive evaluation metrics")
+    
+#     # Create synthetic dataset for tasks
+#     X, y = make_classification(n_samples=300, n_features=5, n_informative=3, 
+#                               n_redundant=1, random_state=42)
+    
+#     # Split data
+#     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+    
+#     # Scale data
+#     scaler = StandardScaler()
+#     X_train_scaled = scaler.fit_transform(X_train)
+#     X_test_scaled = scaler.transform(X_test)
+    
+#     print(f"\nDataset Statistics:")
+#     print(f"Training samples: {X_train.shape[0]}")
+#     print(f"Testing samples: {X_test.shape[0]}")
+#     print(f"Features: {X_train.shape[1]}")
+#     print(f"Positive class ratio: {np.mean(y):.2f}")
+    
+#     # Task 1: Different kernels
+#     kernels = ['linear', 'rbf', 'poly', 'sigmoid']
+#     kernel_results = []
+    
+#     for kernel in kernels:
+#         if kernel == 'poly':
+#             model = SVC(kernel=kernel, degree=3, C=1.0, random_state=42)
+#         else:
+#             model = SVC(kernel=kernel, C=1.0, random_state=42)
+        
+#         model.fit(X_train_scaled, y_train)
+#         train_acc = model.score(X_train_scaled, y_train)
+#         test_acc = model.score(X_test_scaled, y_test)
+#         kernel_results.append([kernel, train_acc, test_acc])
+    
+#     df_kernels = pd.DataFrame(kernel_results, 
+#                              columns=['Kernel', 'Train Accuracy', 'Test Accuracy'])
+    
+#     print("\n" + "-"*40)
+#     print("TASK 1: KERNEL COMPARISON")
+#     print("-"*40)
+#     print(df_kernels.to_string(index=False, float_format=lambda x: f"{x:.4f}"))
+    
+#     # Task 2: Hyperparameter tuning
+#     print("\n" + "-"*40)
+#     print("TASK 2: HYPERPARAMETER TUNING")
+#     print("-"*40)
+    
+#     # Simple manual search for C
+#     C_values = [0.01, 0.1, 1, 10, 100]
+#     C_results = []
+    
+#     for C in C_values:
+#         model = SVC(kernel='rbf', C=C, gamma='scale', random_state=42)
+#         scores = cross_val_score(model, X_train_scaled, y_train, cv=5)
+#         C_results.append([C, scores.mean(), scores.std()])
+    
+#     df_C = pd.DataFrame(C_results, 
+#                        columns=['C Value', 'CV Mean Accuracy', 'CV Std'])
+    
+#     print("\nCross-validation results for different C values:")
+#     print(df_C.to_string(index=False, float_format=lambda x: f"{x:.4f}"))
+    
+#     # Find best C
+#     best_C_row = df_C.loc[df_C['CV Mean Accuracy'].idxmax()]
+#     print(f"\nBest C value: {best_C_row['C Value']} "
+#           f"(Accuracy: {best_C_row['CV Mean Accuracy']:.4f})")
+    
+#     return df_kernels, df_C
+
+# # ============================================================================
+# # SECTION 10: MAIN FUNCTION - RUN ALL SECTIONS
+# # ============================================================================
+
+# def main():
+#     """Main function to run all SVM demonstrations"""
+#     print("\n" + "="*80)
+#     print("COMPLETE SVM IMPLEMENTATION - MACHINE LEARNING LAB")
+#     print("="*80)
+#     print("Instructor: ALISHBA SUBHANI")
+#     print("Course: AL3002")
+#     print("University: National University of Computer & Emerging Sciences, Karachi")
+#     print("="*80)
+    
+#     try:
+#         # Run all sections
+#         print("\n" + "="*80)
+#         print("STARTING SVM DEMONSTRATIONS...")
+#         print("="*80)
+        
+#         # Section 1: Basic SVM
+#         svm_model, X_train, y_train, X_test, y_test = basic_svm_implementation()
+        
+#         # Section 2: Kernels
+#         kernel_results = compare_svm_kernels()
+        
+#         # Section 3: C parameter
+#         C_values = effect_of_C_parameter()
+        
+#         # Section 4: Gamma parameter
+#         gamma_values = effect_of_gamma_parameter()
+        
+#         # Section 5: Hyperparameter tuning
+#         grid_search = svm_hyperparameter_tuning()
+        
+#         # Section 6: Complete evaluation
+#         metrics_df, trained_model = complete_svm_evaluation()
+        
+#         # Section 7: Multi-class
+#         multiclass_results = multiclass_svm()
+        
+#         # Section 8: SVM vs KNN
+#         comparison_results = compare_svm_knn()
+        
+#         # Section 9: Practical tasks
+#         task1_results, task2_results = practical_task_implementation()
+        
+#         print("\n" + "="*80)
+#         print("ALL SVM DEMONSTRATIONS COMPLETED SUCCESSFULLY!")
+#         print("="*80)
+        
+#         # Summary
+#         print("\n" + "="*80)
+#         print("SUMMARY OF KEY LEARNINGS:")
+#         print("="*80)
+#         print("1. SVM finds optimal hyperplane with maximum margin")
+#         print("2. Support vectors are critical data points near the boundary")
+#         print("3. Kernels transform data to higher dimensions for separation")
+#         print("4. C controls regularization (trade-off: margin vs error)")
+#         print("5. Gamma controls influence of individual points (RBF kernel)")
+#         print("6. Always scale features before using SVM")
+#         print("7. Use GridSearchCV for optimal hyperparameters")
+#         print("8. SVM works well for high-dimensional and non-linear data")
+        
+#     except Exception as e:
+#         print(f"\nError occurred: {e}")
+#         print("Make sure you have all required libraries installed:")
+#         print("pip install numpy pandas matplotlib seaborn scikit-learn")
+
+# # ============================================================================
+# # UTILITY FUNCTIONS
+# # ============================================================================
+
+# def svm_quick_guide():
+#     """Quick reference guide for SVM"""
+#     guide = """
+#     ===================================================================
+#     SVM QUICK REFERENCE GUIDE
+#     ===================================================================
+    
+#     1. BASIC USAGE:
+#        from sklearn.svm import SVC
+#        model = SVC()  # Default: RBF kernel
+#        model.fit(X_train, y_train)
+#        predictions = model.predict(X_test)
+    
+#     2. IMPORTANT PARAMETERS:
+#        - kernel: 'linear', 'rbf', 'poly', 'sigmoid'
+#        - C: Regularization (default=1.0)
+#        - gamma: Kernel coefficient for 'rbf', 'poly', 'sigmoid'
+#        - degree: Polynomial degree for 'poly' kernel
+    
+#     3. COMMON COMBINATIONS:
+#        # For linear separation
+#        SVC(kernel='linear', C=1.0)
+       
+#        # For non-linear (default, usually best)
+#        SVC(kernel='rbf', C=10, gamma='scale')
+       
+#        # For polynomial patterns
+#        SVC(kernel='poly', degree=3, C=1.0)
+    
+#     4. PREPROCESSING
+
+# # Logistic & Linear Regression
+
+# # Cutomer dataset
+# # ========================================
+# # Full ML Pipeline: EDA, Preprocessing, Feature Selection, ML Models, PCA, KMeans, NLP
+# # ========================================
+
+# # 1️⃣ Import Required Libraries
+# import pandas as pd
+# import numpy as np
+# import matplotlib.pyplot as plt
+# import seaborn as sns
+
+# # Preprocessing & Feature Selection
+# from sklearn.model_selection import train_test_split
+# from sklearn.preprocessing import StandardScaler, LabelEncoder
+# from sklearn.impute import SimpleImputer
+# from sklearn.feature_selection import SelectKBest, f_regression
+
+# # Dimensionality Reduction & Clustering
+# from sklearn.decomposition import PCA
+# from sklearn.cluster import KMeans
+
+# # ML Models
+# from sklearn.linear_model import LinearRegression, LogisticRegression
+# from sklearn.neural_network import MLPClassifier
+# from sklearn.naive_bayes import MultinomialNB
+# from sklearn.svm import SVC
+# from sklearn.tree import DecisionTreeClassifier
+# from sklearn.neighbors import KNeighborsClassifier
+
+# # NLP
+# from sklearn.feature_extraction.text import CountVectorizer
+
+# # Metrics
+# from sklearn.metrics import accuracy_score, classification_report, r2_score, mean_squared_error
+
+# # ========================================
+# # 2️⃣ Load Dataset
+# # ========================================
+# df = pd.read_csv("your_dataset.csv")
+# print("Dataset Head:\n", df.head())
+# print("Dataset Info:\n")
+# df.info()
+
+# # ========================================
+# # 3️⃣ Preprocessing
+# # ========================================
+
+# # 3.1 Separate numeric and categorical columns
+# num_cols = df.select_dtypes(include=['int64', 'float64']).columns
+# cat_cols = df.select_dtypes(include=['object']).columns
+
+# # 3.2 Handle missing values
+# num_imputer = SimpleImputer(strategy='mean')
+# df[num_cols] = num_imputer.fit_transform(df[num_cols])
+
+# cat_imputer = SimpleImputer(strategy='most_frequent')
+# df[cat_cols] = cat_imputer.fit_transform(df[cat_cols])
+
+# # 3.3 Encode categorical variables (One-Hot Encoding)
+# df = pd.get_dummies(df, columns=cat_cols, drop_first=True)
+
+# # 3.4 Feature Scaling
+# scaler = StandardScaler()
+# df_scaled = pd.DataFrame(scaler.fit_transform(df), columns=df.columns)
+
+# # ========================================
+# # 4️⃣ Exploratory Data Analysis (EDA)
+# # ========================================
+# plt.figure(figsize=(12,8))
+# sns.heatmap(df_scaled.corr(), annot=True, cmap='coolwarm')
+# plt.title("Correlation Heatmap")
+# plt.show()
+
+# df_scaled.hist(figsize=(15,10), bins=20)
+# plt.show()
+
+# plt.figure(figsize=(15,10))
+# sns.boxplot(data=df_scaled)
+# plt.xticks(rotation=45)
+# plt.show()
+
+# # ========================================
+# # 5️⃣ Feature Selection
+# # ========================================
+# target_col = 'Customer_Satisfaction_Score'  # Change accordingly
+# X = df_scaled.drop(target_col, axis=1)
+# y = df_scaled[target_col]
+
+# best_features = SelectKBest(score_func=f_regression, k=10)
+# fit = best_features.fit(X, y)
+# df_scores = pd.DataFrame({'Feature': X.columns, 'Score': fit.scores_})
+# top_features = df_scores.sort_values(by='Score', ascending=False)['Feature'][:10]
+# print("Top Features:\n", df_scores.sort_values(by='Score', ascending=False))
+
+# X_selected = X[top_features]
+
+# # ========================================
+# # 6️⃣ Train-Test Split
+# # ========================================
+# X_train, X_test, y_train, y_test = train_test_split(X_selected, y, test_size=0.2, random_state=42)
+
+# # ========================================
+# # 7️⃣ Regression Model: Linear Regression
+# # ========================================
+# lr_model = LinearRegression()
+# lr_model.fit(X_train, y_train)
+# y_pred_lr = lr_model.predict(X_test)
+# print("Linear Regression R2:", r2_score(y_test, y_pred_lr))
+# print("Linear Regression RMSE:", mean_squared_error(y_test, y_pred_lr, squared=False))
+
+# # ========================================
+# # 8️⃣ Classification Setup
+# # ========================================
+# # Convert target into 3 classes for classification models
+# y_class = pd.qcut(y, q=3, labels=[0,1,2])
+# X_train_c, X_test_c, y_train_c, y_test_c = train_test_split(X_selected, y_class, test_size=0.2, random_state=42)
+
+# # --- Logistic Regression ---
+# log_model = LogisticRegression(max_iter=1000)
+# log_model.fit(X_train_c, y_train_c)
+# y_pred_log = log_model.predict(X_test_c)
+# print("Logistic Regression Accuracy:", accuracy_score(y_test_c, y_pred_log))
+# print(classification_report(y_test_c, y_pred_log))
+
+# # --- MLP Classifier (ANN) ---
+# mlp = MLPClassifier(hidden_layer_sizes=(64,32,16), activation='relu', max_iter=500)
+# mlp.fit(X_train_c, y_train_c)
+# y_pred_mlp = mlp.predict(X_test_c)
+# print("MLP Classifier Accuracy:", accuracy_score(y_test_c, y_pred_mlp))
+
+# # --- Decision Tree Classifier ---
+# dt = DecisionTreeClassifier(random_state=42)
+# dt.fit(X_train_c, y_train_c)
+# y_pred_dt = dt.predict(X_test_c)
+# print("Decision Tree Accuracy:", accuracy_score(y_test_c, y_pred_dt))
+
+# # --- K-Nearest Neighbors ---
+# knn = KNeighborsClassifier(n_neighbors=5)
+# knn.fit(X_train_c, y_train_c)
+# y_pred_knn = knn.predict(X_test_c)
+# print("KNN Accuracy:", accuracy_score(y_test_c, y_pred_knn))
+
+# # --- Support Vector Machine ---
+# svm_model = SVC(kernel='linear')
+# svm_model.fit(X_train_c, y_train_c)
+# y_pred_svm = svm_model.predict(X_test_c)
+# print("SVM Accuracy:", accuracy_score(y_test_c, y_pred_svm))
+
+# # --- Multinomial Naive Bayes ---
+# # NB requires non-negative features -> scale to 0-1
+# X_min = X_selected - X_selected.min()
+# X_min = X_min / X_min.max()
+# X_train_nb, X_test_nb, y_train_nb, y_test_nb = train_test_split(X_min, y_class, test_size=0.2, random_state=42)
+
+# nb = MultinomialNB()
+# nb.fit(X_train_nb, y_train_nb)
+# y_pred_nb = nb.predict(X_test_nb)
+# print("Multinomial Naive Bayes Accuracy:", accuracy_score(y_test_nb, y_pred_nb))
+
+# # ========================================
+# # 9️⃣ PCA: Dimensionality Reduction
+# # ========================================
+# pca = PCA()
+# X_pca = pca.fit_transform(X_selected)
+# explained_var = pca.explained_variance_ratio_
+# cum_var = np.cumsum(explained_var)
+# plt.figure(figsize=(8,5))
+# plt.plot(cum_var, marker='o')
+# plt.xlabel("Number of Components")
+# plt.ylabel("Cumulative Explained Variance")
+# plt.title("PCA Cumulative Explained Variance")
+# plt.show()
+
+# # ========================================
+# # 🔟 KMeans Clustering
+# # ========================================
+# kmeans = KMeans(n_clusters=3, random_state=42)
+# clusters = kmeans.fit_predict(X_selected)
+# df['Cluster'] = clusters
+
+# sns.scatterplot(x=X_selected.iloc[:,0], y=X_selected.iloc[:,1], hue=clusters, palette='Set1')
+# plt.title("KMeans Clustering")
+# plt.show()
+
+# # ========================================
+# # 1️⃣1️⃣ NLP: CountVectorizer (Bag of Words)
+# # ========================================
+# # Example: using 'Category Preference' column if exists
+# if 'Category Preference' in df.columns:
+#     corpus = df['Category Preference'].astype(str)
+#     vectorizer = CountVectorizer()
+#     X_bow = vectorizer.fit_transform(corpus)
+#     print("Bag of Words Shape:", X_bow.shape)
+#     print("Feature Names:", vectorizer.get_feature_names_out())
+
+# print(" Pipeline Completed Successfully!")
+
+# #Decision Tree Classifier – basic tree model.
+
+# #K-Nearest Neighbors (KNN) – distance-based classifier.
+
+# #Random Forest – ensemble of decision trees.
+# #AdaBoost – boosting ensemble.
+
+# #XGBoost – gradient boosting with advanced optimizations.
+
+# #Voting Classifier – combines multiple models:
+# # =========================================================
+# # ML Models: Decision Tree, KNN, and Ensemble Learning
+# # =========================================================
+
+# # 1️⃣ Import Required Libraries
+# import pandas as pd
+# import numpy as np
+
+# # Preprocessing
+# from sklearn.model_selection import train_test_split
+# from sklearn.preprocessing import StandardScaler
+# from sklearn.impute import SimpleImputer
+
+# # ML Models
+# from sklearn.tree import DecisionTreeClassifier
+# from sklearn.neighbors import KNeighborsClassifier
+# from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier, VotingClassifier
+# from xgboost import XGBClassifier
+
+# # Metrics
+# from sklearn.metrics import accuracy_score, classification_report
+
+# # =========================================================
+# # 2️⃣ Load Dataset
+# # =========================================================
+# df = pd.read_csv("your_dataset.csv")  # replace with your dataset
+
+# # Assume 'target' column is our label
+# target_col = 'target'  # change to your target column
+# X = df.drop(target_col, axis=1)
+# y = df[target_col]
+
+# # =========================================================
+# # 3️⃣ Preprocessing
+# # =========================================================
+# # Handle missing values
+# num_cols = X.select_dtypes(include=['float64','int64']).columns
+# num_imputer = SimpleImputer(strategy='mean')
+# X[num_cols] = num_imputer.fit_transform(X[num_cols])
+
+# # Feature Scaling for KNN
+# scaler = StandardScaler()
+# X_scaled = scaler.fit_transform(X)
+
+# # Train-Test Split
+# X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.2, random_state=42)
+
+# # =========================================================
+# # 4️⃣ Decision Tree Classifier
+# # =========================================================
+# dt = DecisionTreeClassifier(random_state=42)
+# dt.fit(X_train, y_train)
+# y_pred_dt = dt.predict(X_test)
+
+# print("Decision Tree Accuracy:", accuracy_score(y_test, y_pred_dt))
+# print("Classification Report:\n", classification_report(y_test, y_pred_dt))
+
+# # =========================================================
+# # 5️⃣ K-Nearest Neighbors (KNN)
+# # =========================================================
+# knn = KNeighborsClassifier(n_neighbors=5)
+# knn.fit(X_train, y_train)
+# y_pred_knn = knn.predict(X_test)
+
+# print("KNN Accuracy:", accuracy_score(y_test, y_pred_knn))
+# print("Classification Report:\n", classification_report(y_test, y_pred_knn))
+
+# # =========================================================
+# # 6️⃣ Ensemble Learning Techniques
+# # =========================================================
+
+# # 6.1 Random Forest
+# rf = RandomForestClassifier(n_estimators=100, random_state=42)
+# rf.fit(X_train, y_train)
+# y_pred_rf = rf.predict(X_test)
+# print("Random Forest Accuracy:", accuracy_score(y_test, y_pred_rf))
+
+# # 6.2 AdaBoost
+# ada = AdaBoostClassifier(n_estimators=100, learning_rate=0.5, random_state=42)
+# ada.fit(X_train, y_train)
+# y_pred_ada = ada.predict(X_test)
+# print("AdaBoost Accuracy:", accuracy_score(y_test, y_pred_ada))
+
+# # 6.3 XGBoost
+# xgb = XGBClassifier(n_estimators=100, learning_rate=0.1, use_label_encoder=False, eval_metric='mlogloss')
+# xgb.fit(X_train, y_train)
+# y_pred_xgb = xgb.predict(X_test)
+# print("XGBoost Accuracy:", accuracy_score(y_test, y_pred_xgb))
+
+# # =========================================================
+# # 7️⃣ Voting Classifier (Hard, Soft, Weighted Voting)
+# # =========================================================
+# # Hard Voting
+# voting_hard = VotingClassifier(
+#     estimators=[('dt', dt), ('knn', knn), ('rf', rf)],
+#     voting='hard'
+# )
+# voting_hard.fit(X_train, y_train)
+# y_pred_hard = voting_hard.predict(X_test)
+# print("Hard Voting Accuracy:", accuracy_score(y_test, y_pred_hard))
+
+# # Soft Voting
+# voting_soft = VotingClassifier(
+#     estimators=[('dt', dt), ('knn', knn), ('rf', rf)],
+#     voting='soft'
+# )
+# voting_soft.fit(X_train, y_train)
+# y_pred_soft = voting_soft.predict(X_test)
+# print("Soft Voting Accuracy:", accuracy_score(y_test, y_pred_soft))
+
+# # Weighted Voting (weights based on model accuracy)
+# weights = [accuracy_score(y_test, y_pred_dt),
+#            accuracy_score(y_test, y_pred_knn),
+#            accuracy_score(y_test, y_pred_rf)]
+
+# voting_weighted = VotingClassifier(
+#     estimators=[('dt', dt), ('knn', knn), ('rf', rf)],
+#     voting='soft',
+#     weights=weights
+# )
+# voting_weighted.fit(X_train, y_train)
+# y_pred_weighted = voting_weighted.predict(X_test)
+# print("Weighted Voting Accuracy:", accuracy_score(y_test, y_pred_weighted))
+
+# print(" Ensemble Learning and Voting Classifiers Completed!")
+
+# # Logistic & Linear Regression
+# """
+# COMPLETE LINEAR & LOGISTIC REGRESSION IMPLEMENTATION
+# National University of Computer & Emerging Sciences
+# Machine Learning Lab - Regression Models
+# Instructor: ALISHBA SUBHANI
+# Course: AL3002
+# """
+
+# import numpy as np
+# import pandas as pd
+# import matplotlib.pyplot as plt
+# import seaborn as sns
+# from sklearn.model_selection import train_test_split, cross_val_score, GridSearchCV
+# from sklearn.linear_model import LinearRegression, LogisticRegression
+# from sklearn.preprocessing import StandardScaler, PolynomialFeatures, LabelEncoder
+# from sklearn.metrics import (mean_squared_error, mean_absolute_error, r2_score,
+#                            accuracy_score, confusion_matrix, classification_report,
+#                            roc_curve, auc, precision_score, recall_score, f1_score)
+# from sklearn.datasets import make_regression, make_classification
+# import warnings
+# warnings.filterwarnings('ignore')
+
+# # Set style for better plots
+# plt.style.use('seaborn-v0_8-darkgrid')
+# sns.set_palette("husl")
+
+# # ============================================================================
+# # SECTION 1: LINEAR REGRESSION IMPLEMENTATION
+# # ============================================================================
+
+# def linear_regression_demo():
+#     """Complete Linear Regression Implementation"""
+#     print("\n" + "="*70)
+#     print("SECTION 1: LINEAR REGRESSION IMPLEMENTATION")
+#     print("="*70)
+    
+#     # 1.1 Generate Sample Data
+#     print("\n1. Generating Sample Dataset...")
+#     np.random.seed(42)
+#     n_samples = 200
+#     X = np.random.rand(n_samples, 1) * 10  # Single feature (Years of Experience)
+#     true_slope = 2.5
+#     true_intercept = 30
+#     noise = np.random.randn(n_samples, 1) * 5
+#     y = true_intercept + true_slope * X + noise  # Salary = 30 + 2.5*Experience + noise
+    
+#     # Convert to DataFrame for better visualization
+#     df = pd.DataFrame({'Experience': X.flatten(), 'Salary': y.flatten()})
+    
+#     print(f"Dataset Shape: {df.shape}")
+#     print(f"Sample Data:\n{df.head()}")
+#     print(f"\nSalary Statistics:\n{df['Salary'].describe()}")
+    
+#     # 1.2 Split Data
+#     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+#     print(f"\n2. Data Split:")
+#     print(f"   Training: {X_train.shape[0]} samples")
+#     print(f"   Testing:  {X_test.shape[0]} samples")
+    
+#     # 1.3 Train Linear Regression Model
+#     print("\n3. Training Linear Regression Model...")
+#     lr_model = LinearRegression()
+#     lr_model.fit(X_train, y_train)
+    
+#     # 1.4 Get Coefficients
+#     intercept = lr_model.intercept_[0]
+#     slope = lr_model.coef_[0][0]
+#     print(f"   Intercept (B0): {intercept:.4f}")
+#     print(f"   Slope (B1): {slope:.4f}")
+#     print(f"   True Intercept: {true_intercept}, True Slope: {true_slope}")
+    
+#     # 1.5 Make Predictions
+#     y_pred_train = lr_model.predict(X_train)
+#     y_pred_test = lr_model.predict(X_test)
+    
+#     # 1.6 Calculate Metrics
+#     train_mse = mean_squared_error(y_train, y_pred_train)
+#     test_mse = mean_squared_error(y_test, y_pred_test)
+#     train_r2 = r2_score(y_train, y_pred_train)
+#     test_r2 = r2_score(y_test, y_pred_test)
+#     train_mae = mean_absolute_error(y_train, y_pred_train)
+#     test_mae = mean_absolute_error(y_test, y_pred_test)
+    
+#     print("\n4. Model Performance Metrics:")
+#     print("-"*40)
+#     print(f"{'Metric':<25} {'Training':<15} {'Testing':<15}")
+#     print("-"*40)
+#     print(f"{'Mean Squared Error (MSE)':<25} {train_mse:<15.4f} {test_mse:<15.4f}")
+#     print(f"{'R-squared (R²)':<25} {train_r2:<15.4f} {test_r2:<15.4f}")
+#     print(f"{'Mean Absolute Error (MAE)':<25} {train_mae:<15.4f} {test_mae:<15.4f}")
+    
+#     # 1.7 Visualizations
+#     fig, axes = plt.subplots(1, 3, figsize=(18, 5))
+    
+#     # Plot 1: Regression Line
+#     axes[0].scatter(X_train, y_train, color='blue', alpha=0.5, label='Train Data')
+#     axes[0].scatter(X_test, y_test, color='red', alpha=0.5, label='Test Data')
+    
+#     # Create line for regression
+#     X_line = np.linspace(0, 10, 100).reshape(-1, 1)
+#     y_line = lr_model.predict(X_line)
+#     axes[0].plot(X_line, y_line, color='green', linewidth=3, label=f'Regression Line\ny = {intercept:.2f} + {slope:.2f}x')
+    
+#     axes[0].set_xlabel('Experience (Years)')
+#     axes[0].set_ylabel('Salary ($)')
+#     axes[0].set_title('Linear Regression: Experience vs Salary')
+#     axes[0].legend()
+#     axes[0].grid(True, alpha=0.3)
+    
+#     # Plot 2: Residuals
+#     residuals_test = y_test - y_pred_test
+#     axes[1].scatter(y_pred_test, residuals_test, color='purple', alpha=0.6)
+#     axes[1].axhline(y=0, color='red', linestyle='--', linewidth=2)
+#     axes[1].set_xlabel('Predicted Values')
+#     axes[1].set_ylabel('Residuals')
+#     axes[1].set_title('Residual Plot (Testing Data)')
+#     axes[1].grid(True, alpha=0.3)
+    
+#     # Plot 3: Actual vs Predicted
+#     axes[2].scatter(y_test, y_pred_test, color='orange', alpha=0.6)
+#     axes[2].plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], 
+#                  'r--', linewidth=2, label='Perfect Prediction')
+#     axes[2].set_xlabel('Actual Values')
+#     axes[2].set_ylabel('Predicted Values')
+#     axes[2].set_title(f'Actual vs Predicted\nR² = {test_r2:.4f}')
+#     axes[2].legend()
+#     axes[2].grid(True, alpha=0.3)
+    
+#     plt.suptitle('Linear Regression Analysis', fontsize=16, y=1.05)
+#     plt.tight_layout()
+#     plt.show()
+    
+#     return lr_model, df, X_train, y_train, X_test, y_test
+
+# # ============================================================================
+# # SECTION 2: MULTIPLE LINEAR REGRESSION
+# # ============================================================================
+
+# def multiple_linear_regression():
+#     """Multiple Linear Regression with Multiple Features"""
+#     print("\n" + "="*70)
+#     print("SECTION 2: MULTIPLE LINEAR REGRESSION")
+#     print("="*70)
+    
+#     # 2.1 Generate Sample Data with Multiple Features
+#     print("\n1. Generating Multiple Feature Dataset...")
+#     np.random.seed(42)
+#     n_samples = 300
+    
+#     # Create 3 features
+#     X1 = np.random.rand(n_samples) * 10  # Feature 1: Hours Studied
+#     X2 = np.random.rand(n_samples) * 100  # Feature 2: Previous Scores
+#     X3 = np.random.rand(n_samples) * 10  # Feature 3: Sleep Hours
+    
+#     # Generate target with multiple features
+#     y = 50 + 2.5*X1 + 0.8*X2 + 3.2*X3 + np.random.randn(n_samples) * 10
+    
+#     # Create DataFrame
+#     df = pd.DataFrame({
+#         'Hours_Studied': X1,
+#         'Previous_Scores': X2,
+#         'Sleep_Hours': X3,
+#         'Performance': y
+#     })
+    
+#     print(f"Dataset Shape: {df.shape}")
+#     print(f"Features: {list(df.columns[:-1])}")
+#     print(f"Target: {df.columns[-1]}")
+#     print(f"\nSample Data:\n{df.head()}")
+    
+#     # 2.2 Prepare Data
+#     X = df[['Hours_Studied', 'Previous_Scores', 'Sleep_Hours']].values
+#     y = df['Performance'].values
+    
+#     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    
+#     # 2.3 Train Multiple Linear Regression
+#     mlr_model = LinearRegression()
+#     mlr_model.fit(X_train, y_train)
+    
+#     # 2.4 Get Coefficients
+#     coefficients = mlr_model.coef_
+#     intercept = mlr_model.intercept_
+    
+#     print("\n2. Multiple Linear Regression Coefficients:")
+#     print("-"*50)
+#     print(f"Intercept (B0): {intercept:.4f}")
+#     for i, (feature, coef) in enumerate(zip(df.columns[:-1], coefficients)):
+#         print(f"  {feature}: {coef:.4f}")
+    
+#     # Create equation string
+#     equation = f"Performance = {intercept:.2f}"
+#     for feature, coef in zip(df.columns[:-1], coefficients):
+#         equation += f" + {coef:.2f}*{feature}"
+#     print(f"\nRegression Equation:\n{equation}")
+    
+#     # 2.5 Make Predictions and Evaluate
+#     y_pred = mlr_model.predict(X_test)
+#     mse = mean_squared_error(y_test, y_pred)
+#     r2 = r2_score(y_test, y_pred)
+    
+#     print(f"\n3. Model Performance:")
+#     print(f"   Mean Squared Error: {mse:.4f}")
+#     print(f"   R-squared: {r2:.4f}")
+    
+#     # 2.6 Feature Importance Visualization
+#     importance = pd.DataFrame({
+#         'Feature': df.columns[:-1],
+#         'Coefficient': np.abs(coefficients),
+#         'Absolute_Impact': np.abs(coefficients) * X.std(axis=0)
+#     }).sort_values('Absolute_Impact', ascending=False)
+    
+#     print("\n4. Feature Importance (based on coefficients):")
+#     print(importance.to_string(index=False))
+    
+#     # Visualize feature importance
+#     fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+    
+#     # Bar plot of coefficients
+#     colors = ['red' if x < 0 else 'green' for x in coefficients]
+#     axes[0].bar(df.columns[:-1], coefficients, color=colors)
+#     axes[0].axhline(y=0, color='black', linewidth=0.8)
+#     axes[0].set_xlabel('Features')
+#     axes[0].set_ylabel('Coefficient Value')
+#     axes[0].set_title('Feature Coefficients in Multiple Linear Regression')
+#     axes[0].tick_params(axis='x', rotation=45)
+    
+#     # Scatter plot of predictions vs actual
+#     axes[1].scatter(y_test, y_pred, alpha=0.6)
+#     axes[1].plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], 
+#                  'r--', linewidth=2)
+#     axes[1].set_xlabel('Actual Performance')
+#     axes[1].set_ylabel('Predicted Performance')
+#     axes[1].set_title(f'Multiple LR: Actual vs Predicted\nR² = {r2:.4f}')
+#     axes[1].grid(True, alpha=0.3)
+    
+#     plt.suptitle('Multiple Linear Regression Analysis', fontsize=16, y=1.05)
+#     plt.tight_layout()
+#     plt.show()
+    
+#     return mlr_model, df
+
+# # ============================================================================
+# # SECTION 3: POLYNOMIAL REGRESSION
+# # ============================================================================
+
+# def polynomial_regression():
+#     """Polynomial Regression for Non-linear Relationships"""
+#     print("\n" + "="*70)
+#     print("SECTION 3: POLYNOMIAL REGRESSION")
+#     print("="*70)
+    
+#     # 3.1 Generate Non-linear Data
+#     print("\n1. Generating Non-linear Dataset...")
+#     np.random.seed(42)
+#     n_samples = 100
+#     X = np.random.rand(n_samples, 1) * 10
+#     y = 2 + 3*X + 0.5*X**2 + np.random.randn(n_samples, 1) * 2
+    
+#     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    
+#     # 3.2 Try Different Polynomial Degrees
+#     degrees = [1, 2, 3, 5, 10]
+#     models = []
+#     scores = []
+    
+#     print("\n2. Training Polynomial Regression Models...")
+    
+#     for degree in degrees:
+#         # Create polynomial features
+#         poly = PolynomialFeatures(degree=degree, include_bias=False)
+#         X_train_poly = poly.fit_transform(X_train)
+#         X_test_poly = poly.transform(X_test)
+        
+#         # Train linear regression on polynomial features
+#         model = LinearRegression()
+#         model.fit(X_train_poly, y_train)
+        
+#         # Predict and score
+#         y_pred = model.predict(X_test_poly)
+#         r2 = r2_score(y_test, y_pred)
+        
+#         models.append(model)
+#         scores.append(r2)
+        
+#         print(f"   Degree {degree}: R² = {r2:.4f}")
+    
+#     # 3.3 Find best degree
+#     best_idx = np.argmax(scores)
+#     best_degree = degrees[best_idx]
+#     best_r2 = scores[best_idx]
+    
+#     print(f"\n3. Best Model: Degree {best_degree} with R² = {best_r2:.4f}")
+    
+#     # 3.4 Visualize Different Polynomial Degrees
+#     fig, axes = plt.subplots(2, 3, figsize=(15, 10))
+#     axes = axes.ravel()
+    
+#     X_range = np.linspace(0, 10, 100).reshape(-1, 1)
+    
+#     for idx, degree in enumerate(degrees):
+#         ax = axes[idx]
+        
+#         # Transform for prediction
+#         poly = PolynomialFeatures(degree=degree, include_bias=False)
+#         X_range_poly = poly.fit_transform(X_range)
+#         X_train_poly = poly.fit_transform(X_train)
+        
+#         model = LinearRegression()
+#         model.fit(X_train_poly, y_train)
+#         y_range_pred = model.predict(X_range_poly)
+        
+#         # Plot
+#         ax.scatter(X_train, y_train, color='blue', alpha=0.5, label='Train Data')
+#         ax.scatter(X_test, y_test, color='red', alpha=0.5, label='Test Data')
+#         ax.plot(X_range, y_range_pred, color='green', linewidth=2, 
+#                 label=f'Degree {degree}\nR² = {scores[idx]:.3f}')
+        
+#         ax.set_xlabel('X')
+#         ax.set_ylabel('y')
+#         ax.set_title(f'Polynomial Regression (Degree {degree})')
+#         ax.legend(loc='upper left', fontsize=8)
+#         ax.grid(True, alpha=0.3)
+    
+#     # Remove empty subplot
+#     axes[-1].axis('off')
+    
+#     plt.suptitle('Polynomial Regression: Effect of Different Degrees', fontsize=16, y=1.05)
+#     plt.tight_layout()
+#     plt.show()
+    
+#     # 3.5 Overfitting Demonstration
+#     print("\n4. Overfitting Demonstration:")
+#     print("   Low degrees (1-2): Underfitting - too simple")
+#     print("   Optimal degree (2-3): Good fit")
+#     print("   High degrees (5+): Overfitting - captures noise")
+    
+#     return models, degrees, scores
+
+# # ============================================================================
+# # SECTION 4: LOGISTIC REGRESSION - BINARY CLASSIFICATION
+# # ============================================================================
+
+# def logistic_regression_binary():
+#     """Binary Logistic Regression for Classification"""
+#     print("\n" + "="*70)
+#     print("SECTION 4: BINARY LOGISTIC REGRESSION")
+#     print("="*70)
+    
+#     # 4.1 Generate Binary Classification Data
+#     print("\n1. Generating Binary Classification Dataset...")
+#     X, y = make_classification(
+#         n_samples=500,
+#         n_features=2,
+#         n_informative=2,
+#         n_redundant=0,
+#         n_clusters_per_class=1,
+#         random_state=42,
+#         class_sep=1.5
+#     )
+    
+#     df = pd.DataFrame({'Feature1': X[:, 0], 'Feature2': X[:, 1], 'Class': y})
+#     print(f"Dataset Shape: {df.shape}")
+#     print(f"Class Distribution:\n{df['Class'].value_counts()}")
+#     print(f"\nSample Data:\n{df.head()}")
+    
+#     # 4.2 Split Data
+#     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+    
+#     # Scale features (important for logistic regression)
+#     scaler = StandardScaler()
+#     X_train_scaled = scaler.fit_transform(X_train)
+#     X_test_scaled = scaler.transform(X_test)
+    
+#     # 4.3 Train Logistic Regression
+#     print("\n2. Training Logistic Regression Model...")
+#     log_model = LogisticRegression(random_state=42)
+#     log_model.fit(X_train_scaled, y_train)
+    
+#     # 4.4 Get Model Parameters
+#     coefficients = log_model.coef_[0]
+#     intercept = log_model.intercept_[0]
+    
+#     print(f"\n3. Model Parameters:")
+#     print(f"   Intercept (B0): {intercept:.4f}")
+#     print(f"   Feature 1 Coefficient: {coefficients[0]:.4f}")
+#     print(f"   Feature 2 Coefficient: {coefficients[1]:.4f}")
+    
+#     # 4.5 Make Predictions
+#     y_pred = log_model.predict(X_test_scaled)
+#     y_pred_proba = log_model.predict_proba(X_test_scaled)[:, 1]
+    
+#     # 4.6 Calculate Metrics
+#     accuracy = accuracy_score(y_test, y_pred)
+#     precision = precision_score(y_test, y_pred)
+#     recall = recall_score(y_test, y_pred)
+#     f1 = f1_score(y_test, y_pred)
+    
+#     print("\n4. Classification Metrics:")
+#     print("-"*40)
+#     print(f"Accuracy:  {accuracy:.4f}")
+#     print(f"Precision: {precision:.4f}")
+#     print(f"Recall:    {recall:.4f}")
+#     print(f"F1-Score:  {f1:.4f}")
+    
+#     # 4.7 Confusion Matrix
+#     cm = confusion_matrix(y_test, y_pred)
+#     cm_df = pd.DataFrame(cm, 
+#                         index=['Actual 0', 'Actual 1'],
+#                         columns=['Predicted 0', 'Predicted 1'])
+    
+#     print(f"\n5. Confusion Matrix:")
+#     print(cm_df)
+    
+#     # 4.8 Visualizations
+#     fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+    
+#     # Plot 1: Decision Boundary
+#     h = 0.02  # Step size for mesh
+#     x_min, x_max = X[:, 0].min() - 1, X[:, 0].max() + 1
+#     y_min, y_max = X[:, 1].min() - 1, X[:, 1].max() + 1
+#     xx, yy = np.meshgrid(np.arange(x_min, x_max, h),
+#                         np.arange(y_min, y_max, h))
+    
+#     # Scale mesh points
+#     mesh_points = np.c_[xx.ravel(), yy.ravel()]
+#     mesh_points_scaled = scaler.transform(mesh_points)
+#     Z = log_model.predict(mesh_points_scaled)
+#     Z = Z.reshape(xx.shape)
+    
+#     axes[0, 0].contourf(xx, yy, Z, alpha=0.3, cmap='RdYlBu')
+#     scatter = axes[0, 0].scatter(X_test[:, 0], X_test[:, 1], c=y_test, 
+#                                  edgecolors='k', cmap='RdYlBu')
+#     axes[0, 0].set_xlabel('Feature 1')
+#     axes[0, 0].set_ylabel('Feature 2')
+#     axes[0, 0].set_title('Decision Boundary with Test Data')
+#     plt.colorbar(scatter, ax=axes[0, 0])
+    
+#     # Plot 2: Confusion Matrix Heatmap
+#     sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', 
+#                 xticklabels=['Pred 0', 'Pred 1'],
+#                 yticklabels=['Actual 0', 'Actual 1'],
+#                 ax=axes[0, 1])
+#     axes[0, 1].set_title('Confusion Matrix')
+    
+#     # Plot 3: ROC Curve
+#     fpr, tpr, thresholds = roc_curve(y_test, y_pred_proba)
+#     roc_auc = auc(fpr, tpr)
+    
+#     axes[1, 0].plot(fpr, tpr, color='darkorange', lw=2, 
+#                     label=f'ROC curve (AUC = {roc_auc:.3f})')
+#     axes[1, 0].plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
+#     axes[1, 0].set_xlim([0.0, 1.0])
+#     axes[1, 0].set_ylim([0.0, 1.05])
+#     axes[1, 0].set_xlabel('False Positive Rate')
+#     axes[1, 0].set_ylabel('True Positive Rate')
+#     axes[1, 0].set_title('Receiver Operating Characteristic (ROC) Curve')
+#     axes[1, 0].legend(loc="lower right")
+#     axes[1, 0].grid(True, alpha=0.3)
+    
+#     # Plot 4: Probability Distribution
+#     axes[1, 1].hist(y_pred_proba[y_test == 0], bins=20, alpha=0.5, 
+#                     label='Class 0', color='blue')
+#     axes[1, 1].hist(y_pred_proba[y_test == 1], bins=20, alpha=0.5, 
+#                     label='Class 1', color='red')
+#     axes[1, 1].axvline(x=0.5, color='black', linestyle='--', linewidth=2)
+#     axes[1, 1].set_xlabel('Predicted Probability')
+#     axes[1, 1].set_ylabel('Frequency')
+#     axes[1, 1].set_title('Probability Distribution by Class')
+#     axes[1, 1].legend()
+#     axes[1, 1].grid(True, alpha=0.3)
+    
+#     plt.suptitle('Binary Logistic Regression Analysis', fontsize=16, y=1.05)
+#     plt.tight_layout()
+#     plt.show()
+    
+#     return log_model, df, accuracy, precision, recall, f1
+
+# # ============================================================================
+# # SECTION 5: LOGISTIC REGRESSION - MULTICLASS
+# # ============================================================================
+
+# def logistic_regression_multiclass():
+#     """Multinomial Logistic Regression for Multi-class Classification"""
+#     print("\n" + "="*70)
+#     print("SECTION 5: MULTINOMIAL LOGISTIC REGRESSION")
+#     print("="*70)
+    
+#     # 5.1 Load or Generate Multiclass Data
+#     print("\n1. Loading Iris Dataset (3 Classes)...")
+#     from sklearn.datasets import load_iris
+#     iris = load_iris()
+#     X = iris.data
+#     y = iris.target
+    
+#     df = pd.DataFrame(X, columns=iris.feature_names)
+#     df['Species'] = y
+#     df['Species_Name'] = df['Species'].map({0: 'Setosa', 1: 'Versicolor', 2: 'Virginica'})
+    
+#     print(f"Dataset Shape: {df.shape}")
+#     print(f"Classes: {iris.target_names}")
+#     print(f"Class Distribution:\n{df['Species'].value_counts()}")
+#     print(f"\nSample Data:\n{df.head()}")
+    
+#     # 5.2 Split Data
+#     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+    
+#     # Scale features
+#     scaler = StandardScaler()
+#     X_train_scaled = scaler.fit_transform(X_train)
+#     X_test_scaled = scaler.transform(X_test)
+    
+#     # 5.3 Train Different Logistic Regression Models
+#     print("\n2. Training Different Logistic Regression Models...")
+    
+#     models_config = [
+#         ('One-vs-Rest (Default)', LogisticRegression(random_state=42)),
+#         ('Multinomial', LogisticRegression(multi_class='multinomial', random_state=42)),
+#         ('L1 Regularization', LogisticRegression(penalty='l1', solver='liblinear', random_state=42)),
+#         ('L2 Regularization', LogisticRegression(penalty='l2', random_state=42))
+#     ]
+    
+#     results = []
+    
+#     for name, model in models_config:
+#         model.fit(X_train_scaled, y_train)
+#         train_acc = model.score(X_train_scaled, y_train)
+#         test_acc = model.score(X_test_scaled, y_test)
+        
+#         y_pred = model.predict(X_test_scaled)
+#         f1 = f1_score(y_test, y_pred, average='weighted')
+        
+#         results.append([name, train_acc, test_acc, f1])
+        
+#         print(f"   {name:25} Train Acc: {train_acc:.4f}, Test Acc: {test_acc:.4f}")
+    
+#     # 5.4 Create Results DataFrame
+#     results_df = pd.DataFrame(results, 
+#                              columns=['Model', 'Train Accuracy', 'Test Accuracy', 'F1-Score'])
+#     print(f"\n3. Model Comparison:")
+#     print(results_df.to_string(index=False, float_format=lambda x: f"{x:.4f}"))
+    
+#     # 5.5 Confusion Matrix for Best Model
+#     best_model = LogisticRegression(multi_class='multinomial', random_state=42)
+#     best_model.fit(X_train_scaled, y_train)
+#     y_pred = best_model.predict(X_test_scaled)
+    
+#     cm = confusion_matrix(y_test, y_pred)
+#     cm_df = pd.DataFrame(cm, 
+#                         index=iris.target_names,
+#                         columns=iris.target_names)
+    
+#     print(f"\n4. Confusion Matrix (Multinomial Model):")
+#     print(cm_df)
+    
+#     # 5.6 Classification Report
+#     print("\n5. Detailed Classification Report:")
+#     print("-"*60)
+#     print(classification_report(y_test, y_pred, target_names=iris.target_names))
+    
+#     # 5.7 Visualizations
+#     fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+    
+#     # Plot 1: Feature Importance (Coefficients)
+#     coefficients = best_model.coef_
+#     feature_importance = pd.DataFrame({
+#         'Feature': iris.feature_names,
+#         'Setosa': coefficients[0],
+#         'Versicolor': coefficients[1],
+#         'Virginica': coefficients[2]
+#     })
+    
+#     x = np.arange(len(iris.feature_names))
+#     width = 0.25
+#     axes[0, 0].bar(x - width, feature_importance['Setosa'], width, label='Setosa')
+#     axes[0, 0].bar(x, feature_importance['Versicolor'], width, label='Versicolor')
+#     axes[0, 0].bar(x + width, feature_importance['Virginica'], width, label='Virginica')
+#     axes[0, 0].set_xlabel('Features')
+#     axes[0, 0].set_ylabel('Coefficient Value')
+#     axes[0, 0].set_title('Feature Coefficients by Class')
+#     axes[0, 0].set_xticks(x)
+#     axes[0, 0].set_xticklabels(iris.feature_names, rotation=45)
+#     axes[0, 0].legend()
+#     axes[0, 0].grid(True, alpha=0.3)
+    
+#     # Plot 2: Confusion Matrix Heatmap
+#     sns.heatmap(cm, annot=True, fmt='d', cmap='Blues',
+#                 xticklabels=iris.target_names,
+#                 yticklabels=iris.target_names,
+#                 ax=axes[0, 1])
+#     axes[0, 1].set_title('Confusion Matrix')
+#     axes[0, 1].set_xlabel('Predicted')
+#     axes[0, 1].set_ylabel('Actual')
+    
+#     # Plot 3: Model Comparison Bar Chart
+#     models = results_df['Model']
+#     test_accuracies = results_df['Test Accuracy']
+#     colors = ['blue', 'green', 'orange', 'red']
+#     axes[1, 0].bar(models, test_accuracies, color=colors)
+#     axes[1, 0].set_ylabel('Test Accuracy')
+#     axes[1, 0].set_title('Model Comparison')
+#     axes[1, 0].tick_params(axis='x', rotation=45)
+#     axes[1, 0].grid(True, alpha=0.3, axis='y')
+    
+#     # Plot 4: Feature Pair Plot (First 2 features)
+#     scatter = axes[1, 1].scatter(X_test[:, 0], X_test[:, 1], c=y_test, 
+#                                  cmap='viridis', edgecolors='k')
+#     axes[1, 1].set_xlabel(iris.feature_names[0])
+#     axes[1, 1].set_ylabel(iris.feature_names[1])
+#     axes[1, 1].set_title('Feature Space Visualization')
+#     plt.colorbar(scatter, ax=axes[1, 1])
+#     axes[1, 1].grid(True, alpha=0.3)
+    
+#     plt.suptitle('Multinomial Logistic Regression Analysis', fontsize=16, y=1.05)
+#     plt.tight_layout()
+#     plt.show()
+    
+#     return best_model, results_df, cm_df
+
+# # ============================================================================
+# # SECTION 6: COMPARISON AND PRACTICAL TASKS
+# # ============================================================================
+
+# def regression_comparison_and_tasks():
+#     """Comparison of Regression Models and Practical Tasks"""
+#     print("\n" + "="*70)
+#     print("SECTION 6: REGRESSION MODELS COMPARISON & PRACTICAL TASKS")
+#     print("="*70)
+    
+#     # 6.1 Comparison Table
+#     print("\n1. Comparison of Linear vs Logistic Regression:")
+#     print("-"*80)
+#     comparison_data = {
+#         'Aspect': [
+#             'Problem Type', 'Output', 'Equation', 'Cost Function', 
+#             'Assumptions', 'Regularization', 'Evaluation Metrics'
+#         ],
+#         'Linear Regression': [
+#             'Regression', 'Continuous values', 'y = B0 + B1x', 
+#             'Mean Squared Error', 'Linearity, Normality, Homoscedasticity',
+#             'Ridge (L2), Lasso (L1)', 'MSE, MAE, R²'
+#         ],
+#         'Logistic Regression': [
+#             'Classification', 'Probabilities (0-1)', 'p = 1/(1+e^-(B0+B1x))',
+#             'Log Loss / Cross-Entropy', 'Linearity of log-odds, No multicollinearity',
+#             'L1, L2, ElasticNet', 'Accuracy, Precision, Recall, F1, ROC-AUC'
+#         ]
+#     }
+    
+#     comparison_df = pd.DataFrame(comparison_data)
+#     print(comparison_df.to_string(index=False))
+    
+#     # 6.2 Practical Task Implementation
+#     print("\n2. Practical Task: Heart Disease Dataset")
+#     print("-"*40)
+    
+#     try:
+#         # Load heart disease dataset
+#         from sklearn.datasets import fetch_openml
+#         heart = fetch_openml(name='heart-disease', version=1, as_frame=True)
+#         X_heart = heart.data
+#         y_heart = heart.target.astype(int)
+        
+#         print(f"Dataset: Heart Disease")
+#         print(f"Shape: {X_heart.shape}")
+#         print(f"Features: {list(X_heart.columns[:3])}...")
+#         print(f"Target Distribution:\n{y_heart.value_counts()}")
+        
+#         # 6.3 Different Regularization Penalties
+#         print("\n3. Logistic Regression with Different Regularization Penalties:")
+        
+#         penalties = [
+#             ('l1', LogisticRegression(penalty='l1', solver='liblinear', random_state=42)),
+#             ('l2', LogisticRegression(penalty='l2', random_state=42)),
+#             ('elasticnet', LogisticRegression(penalty='elasticnet', solver='saga', 
+#                                              l1_ratio=0.5, random_state=42))
+#         ]
+        
+#         penalty_results = []
+#         for penalty_name, model in penalties:
+#             # Split and scale
+#             X_train, X_test, y_train, y_test = train_test_split(
+#                 X_heart, y_heart, test_size=0.3, random_state=42
+#             )
+#             scaler = StandardScaler()
+#             X_train_scaled = scaler.fit_transform(X_train)
+#             X_test_scaled = scaler.transform(X_test)
+            
+#             # Train and evaluate
+#             model.fit(X_train_scaled, y_train)
+#             train_acc = model.score(X_train_scaled, y_train)
+#             test_acc = model.score(X_test_scaled, y_test)
+            
+#             penalty_results.append([penalty_name, train_acc, test_acc])
+            
+#             print(f"   {penalty_name:12} Train Acc: {train_acc:.4f}, Test Acc: {test_acc:.4f}")
+        
+#         # 6.4 Different Solvers Comparison
+#         print("\n4. Logistic Regression with Different Solvers (Iris Dataset):")
+        
+#         # Load iris dataset
+#         iris = load_iris()
+#         X_iris = iris.data[:, :2]  # Use only 2 features for simplicity
+#         y_iris = iris.target
+        
+#         solvers = ['lbfgs', 'liblinear', 'newton-cg', 'sag', 'saga']
+#         solver_results = []
+        
+#         for solver in solvers:
+#             try:
+#                 model = LogisticRegression(solver=solver, random_state=42, max_iter=1000)
+#                 scores = cross_val_score(model, X_iris, y_iris, cv=5)
+#                 solver_results.append([solver, scores.mean(), scores.std()])
+#                 print(f"   {solver:12} CV Mean: {scores.mean():.4f} (±{scores.std():.4f})")
+#             except:
+#                 print(f"   {solver:12} Not supported for this dataset")
+        
+#         # 6.5 Create results tables
+#         penalty_df = pd.DataFrame(penalty_results, 
+#                                  columns=['Penalty', 'Train Accuracy', 'Test Accuracy'])
+        
+#         solver_df = pd.DataFrame(solver_results, 
+#                                 columns=['Solver', 'CV Mean Accuracy', 'CV Std'])
+        
+#         print("\n5. Summary Results:")
+#         print("\nRegularization Penalties Comparison:")
+#         print(penalty_df.to_string(index=False, float_format=lambda x: f"{x:.4f}"))
+        
+#         if not solver_df.empty:
+#             print("\nSolver Comparison:")
+#             print(solver_df.to_string(index=False, float_format=lambda x: f"{x:.4f}"))
+        
+#     except Exception as e:
+#         print(f"Note: Could not load heart dataset. Using synthetic data for demonstration.")
+#         print(f"Error: {e}")
+    
+#     return comparison_df
+
+# # ============================================================================
+# # SECTION 7: ASSUMPTIONS CHECKING
+# # ============================================================================
+
+# def check_regression_assumptions():
+#     """Check Linear Regression Assumptions"""
+#     print("\n" + "="*70)
+#     print("SECTION 7: CHECKING LINEAR REGRESSION ASSUMPTIONS")
+#     print("="*70)
+    
+#     # Generate sample data
+#     np.random.seed(42)
+#     X = np.random.rand(100, 1) * 10
+#     y = 3 + 2*X + np.random.randn(100, 1) * 1  # Linear relationship with noise
+    
+#     # Create linear regression model
+#     model = LinearRegression()
+#     model.fit(X, y)
+#     y_pred = model.predict(X)
+   
+
